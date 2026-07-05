@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 type ExpenseListItemProps = {
   expense: Expense;
+  actionsVisibility?: "always" | "hover";
 };
 
 function formatDate(date: string | Date) {
@@ -45,7 +46,10 @@ const styles = {
   },
 };
 
-export function ExpenseListItem({ expense }: ExpenseListItemProps) {
+export function ExpenseListItem({
+  expense,
+  actionsVisibility = "always",
+}: ExpenseListItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const deleteExpense = useDeleteExpense();
@@ -122,7 +126,13 @@ export function ExpenseListItem({ expense }: ExpenseListItemProps) {
           {formatCurrency(expense.value)}
         </p>
 
-        <div className="flex items-center gap-1">
+        <div
+          className={cn(
+            "flex items-center gap-1 transition",
+            actionsVisibility === "hover" &&
+              "opacity-100 sm:opacity-0 sm:group-hover:opacity-100",
+          )}
+        >
           <EditExpenseDialog expense={expense} />
 
           <button
