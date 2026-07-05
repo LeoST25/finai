@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "auth/**",
+    "**/*spec.ts",
+    "whatsapp-financas-web/**",
+    "dist",
+    "node_modules",
+    "test",
+    "whatsapp-financas-web",
+    "auth"
+  ]
+}
