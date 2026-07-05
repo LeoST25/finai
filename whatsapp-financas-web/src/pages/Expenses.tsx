@@ -5,6 +5,7 @@ import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
 import { CreateExpenseDialog } from "@/features/expenses/components/create-expense-dialog";
+import { ExpensesExportButton } from "@/features/dashboard/components/expenses-export-button";
 import { ExpensesList } from "@/features/expenses/components/expenses-list";
 import { ExpensesSummary } from "@/features/expenses/components/expense-summary";
 import { ExpensesFilters } from "@/features/expenses/components/expense-filters";
@@ -67,14 +68,22 @@ export function Expenses() {
             </h1>
 
             <p className="mt-1 text-slate-500">
-              Consulte, filtre, edite e exclua suas receitas e despesas.
+              Consulte, filtre, edite, exclua e exporte suas receitas e
+              despesas.
             </p>
           </div>
 
-          <CreateExpenseDialog
-            triggerLabel="Novo lançamento"
-            triggerVariant="default"
-          />
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <ExpensesExportButton
+              expenses={filteredExpenses}
+              disabled={isLoading}
+            />
+
+            <CreateExpenseDialog
+              triggerLabel="Novo lançamento"
+              triggerVariant="default"
+            />
+          </div>
         </section>
 
         <ExpensesSummary summary={summary} />
