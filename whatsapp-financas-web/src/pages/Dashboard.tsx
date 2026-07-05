@@ -42,7 +42,11 @@ export function Dashboard() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <DashboardHeader />
+        <DashboardHeader
+          user={{
+            name: "Leonardo",
+          }}
+        />
 
         <DashboardKpisWidget summary={summary} />
 
