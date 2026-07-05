@@ -1,40 +1,60 @@
-import { DashboardKpisWidget } from "@/features/dashboard/widgets/dashboard-kpis-widget";
-import { DashboardInsightsWidget } from "@/features/dashboard/widgets/dashboard-insights-widget";
-import { DashboardActionsWidget } from "@/features/dashboard/widgets/dashboard-actions-widget";
-import { DashboardTransactionsWidget } from "@/features/dashboard/widgets/dashboard-transactions-widget";
-import { DashboardChartsWidget } from "@/features/dashboard/widgets/dashboard-charts-widget";
+import { AppLayout } from "@/shared/layout/AppLayout";
+import { ErrorState } from "@/shared/feedback/error-state";
+
+import { useExpenses } from "@/features/expenses/hooks/use-expenses";
+import { getDashboardSummary } from "@/features/dashboard/dashboard-summary";
+
+import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
+import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
+
+import { CreateExpenseForm } from "@/features/expenses/components/create-expense-form";
+
+import {
+  DashboardActionsWidget,
+  DashboardChartsWidget,
+  DashboardInsightsWidget,
+  DashboardKpisWidget,
+  DashboardTransactionsWidget,
+} from "@/features/dashboard/widgets";
 
 export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
 
   const summary = getDashboardSummary(data);
 
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <DashboardSkeleton />
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <ErrorState />
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
-      {isLoading ? (
-        <DashboardSkeleton />
-      ) : error ? (
-        <ErrorState />
-      ) : (
-        <div className="space-y-6">
-          <DashboardHeader />
+      <div className="space-y-6">
+        <DashboardHeader />
 
-          <DashboardKpis summary={summary} />
+        <DashboardKpisWidget summary={summary} />
 
-          <AiInsights expenses={data} />
+        <DashboardInsightsWidget expenses={data} />
 
-          <QuickActions />
+        <DashboardActionsWidget />
 
-          <CreateExpenseForm />
+        <CreateExpenseForm />
 
-          <LatestTransactions expenses={data} />
+        <DashboardTransactionsWidget expenses={data} />
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <CategoryChart expenses={data} />
-            <MonthlyChart expenses={data} />
-          </div>
-        </div>
-      )}
+        <DashboardChartsWidget expenses={data} />
+      </div>
     </AppLayout>
   );
 }
