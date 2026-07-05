@@ -1,99 +1,60 @@
-import type { LucideIcon } from "lucide-react";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { AppLayout } from "@/shared/layout/AppLayout";
+import { ErrorState } from "@/shared/feedback/error-state";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { useExpenses } from "@/features/expenses/hooks/use-expenses";
+import { getDashboardSummary } from "@/features/dashboard/dashboard-summary";
 
-type KpiCardProps = {
-  title: string;
-  value: string;
-  description: string;
-  icon: LucideIcon;
-  variant?: "default" | "success" | "danger" | "warning";
-};
+import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
+import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
 
-const variants = {
-  default: {
-    container:
-      "bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300",
-    icon: "bg-slate-100 text-slate-700",
-    value: "text-slate-900",
-    trend: "text-slate-500",
-  },
-  success: {
-    container:
-      "bg-emerald-50 border-emerald-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300",
-    icon: "bg-emerald-100 text-emerald-700",
-    value: "text-emerald-700",
-    trend: "text-emerald-600",
-  },
-  danger: {
-    container:
-      "bg-red-50 border-red-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300",
-    icon: "bg-red-100 text-red-700",
-    value: "text-red-700",
-    trend: "text-red-600",
-  },
-  warning: {
-    container:
-      "bg-amber-50 border-amber-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300",
-    icon: "bg-amber-100 text-amber-700",
-    value: "text-amber-700",
-    trend: "text-amber-600",
-  },
-};
+import {
+  DashboardActionsWidget,
+  DashboardChartsWidget,
+  DashboardInsightsWidget,
+  DashboardKpisWidget,
+  DashboardTransactionsWidget,
+} from "@/features/dashboard/widgets";
 
-export function KpiCard({
-  title,
-  value,
-  description,
-  icon: Icon,
-  variant = "default",
-}: KpiCardProps) {
-  const style = variants[variant];
+export function Dashboard() {
+  const { data = [], isLoading, error } = useExpenses();
 
-  const TrendIcon =
-    variant === "danger" ? ArrowDownRight : ArrowUpRight;
+  const summary = getDashboardSummary(data);
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <DashboardSkeleton />
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <ErrorState />
+      </AppLayout>
+    );
+  }
 
   return (
-    <Card className={cn("overflow-hidden border", style.container)}>
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-slate-500">
-              {title}
-            </p>
+    <AppLayout>
+      <div className="mx-auto w-full max-w-7xl space-y-4 sm:space-y-6">
+        <DashboardHeader
+          user={{
+            name: "Leonardo",
+          }}
+        />
 
-            <div className="flex items-center gap-2">
-              <h3
-                className={cn(
-                  "text-3xl font-bold tracking-tight",
-                  style.value,
-                )}
-              >
-                {value}
-              </h3>
+        <DashboardKpisWidget summary={summary} />
 
-              <TrendIcon
-                className={cn("h-5 w-5", style.trend)}
-              />
-            </div>
+        <DashboardInsightsWidget expenses={data} />
 
-            <p className="text-xs text-slate-500">
-              {description}
-            </p>
-          </div>
+        <DashboardActionsWidget />
 
-          <div
-            className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-2xl",
-              style.icon,
-            )}
-          >
-            <Icon className="h-6 w-6" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        <DashboardTransactionsWidget expenses={data} />
+
+        <DashboardChartsWidget expenses={data} />
+      </div>
+    </AppLayout>
   );
 }
