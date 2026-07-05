@@ -60,20 +60,20 @@ export function Expenses() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <section className="flex flex-col gap-4 rounded-3xl border bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+      <div className="mx-auto w-full max-w-7xl space-y-4 sm:space-y-6">
+        <section className="flex flex-col gap-5 rounded-2xl border bg-white p-5 shadow-sm sm:rounded-3xl sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Lançamentos
             </h1>
 
-            <p className="mt-1 text-slate-500">
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
               Consulte, filtre, edite, exclua e exporte suas receitas e
               despesas.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="grid gap-2 sm:flex sm:items-center">
             <ExpensesExportButton
               expenses={filteredExpenses}
               disabled={isLoading}

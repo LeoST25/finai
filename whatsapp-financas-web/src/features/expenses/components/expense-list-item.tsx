@@ -80,19 +80,19 @@ export function ExpenseListItem({
 
   return (
     <div className="group flex flex-col gap-4 rounded-xl border bg-white p-4 transition hover:border-slate-300 hover:shadow-sm lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex items-start gap-3">
+      <div className="flex min-w-0 items-start gap-3">
         <div
           className={cn(
-            "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl",
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-11 sm:w-11",
             style.iconBox,
           )}
         >
           <Icon className="h-5 w-5" />
         </div>
 
-        <div className="space-y-1">
+        <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold text-slate-900">
+            <p className="max-w-full truncate font-semibold text-slate-900">
               {expense.description}
             </p>
 
@@ -104,8 +104,8 @@ export function ExpenseListItem({
             </Badge>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">
-            <span>{expense.category}</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+            <span className="max-w-full truncate">{expense.category}</span>
 
             <span className="flex items-center gap-1">
               <CalendarDays className="h-3.5 w-3.5" />
@@ -115,10 +115,10 @@ export function ExpenseListItem({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 lg:justify-end">
+      <div className="flex items-center justify-between gap-3 border-t pt-3 lg:border-t-0 lg:pt-0">
         <p
           className={cn(
-            "min-w-32 text-right text-base font-bold",
+            "min-w-0 truncate text-right text-base font-bold sm:min-w-32",
             style.amount,
           )}
         >
@@ -128,7 +128,7 @@ export function ExpenseListItem({
 
         <div
           className={cn(
-            "flex items-center gap-1 transition",
+            "flex shrink-0 items-center gap-1 transition",
             actionsVisibility === "hover" &&
               "opacity-100 sm:opacity-0 sm:group-hover:opacity-100",
           )}

@@ -44,10 +44,10 @@ export function ExpensesFilters({
     period !== "all";
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <Card className="rounded-2xl">
+      <CardHeader className="flex flex-col gap-3 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Filter className="h-5 w-5" />
             Filtros
           </CardTitle>
@@ -60,15 +60,20 @@ export function ExpensesFilters({
         </div>
 
         {hasActiveFilters && (
-          <Button variant="outline" size="sm" onClick={onClearFilters}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onClearFilters}
+            className="w-full sm:w-auto"
+          >
             <RotateCcw className="mr-2 h-4 w-4" />
             Limpar filtros
           </Button>
         )}
       </CardHeader>
 
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-4">
+      <CardContent className="p-5 pt-0 sm:p-6 sm:pt-0">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <Input
             placeholder="Buscar por descrição ou categoria"
             value={search}
