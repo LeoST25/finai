@@ -54,7 +54,7 @@ export function EditExpenseDialog({ expense }: Props) {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="outline" size="sm">
           <Pencil className="mr-2 h-4 w-4" />
           Editar
