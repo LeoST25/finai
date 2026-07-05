@@ -18,10 +18,14 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 type CreateExpenseFormProps = {
+  defaultType?: "income" | "expense";
   onSuccess?: () => void;
 };
 
-export function CreateExpenseForm({ onSuccess }: CreateExpenseFormProps) {
+export function CreateExpenseForm({
+  defaultType = "expense",
+  onSuccess,
+}: CreateExpenseFormProps) {
   const createExpense = useCreateExpense();
 
   const {
@@ -35,7 +39,7 @@ export function CreateExpenseForm({ onSuccess }: CreateExpenseFormProps) {
       description: "",
       category: "",
       value: 0,
-      type: "expense",
+      type: defaultType,
     },
   });
 
@@ -52,7 +56,7 @@ export function CreateExpenseForm({ onSuccess }: CreateExpenseFormProps) {
           description: "",
           category: "",
           value: 0,
-          type: "expense",
+          type: defaultType,
         });
 
         onSuccess?.();

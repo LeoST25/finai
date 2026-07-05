@@ -14,13 +14,18 @@ import { CreateExpenseForm } from "./create-expense-form";
 type CreateExpenseDialogProps = {
   triggerLabel?: string;
   triggerVariant?: "default" | "secondary" | "outline" | "ghost";
+  defaultType?: "income" | "expense";
 };
 
 export function CreateExpenseDialog({
   triggerLabel = "Novo lançamento",
   triggerVariant = "default",
+  defaultType = "expense",
 }: CreateExpenseDialogProps) {
   const [open, setOpen] = useState(false);
+
+  const title =
+    defaultType === "income" ? "Nova receita" : "Nova despesa";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -33,10 +38,13 @@ export function CreateExpenseDialog({
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Novo lançamento</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
 
-        <CreateExpenseForm onSuccess={() => setOpen(false)} />
+        <CreateExpenseForm
+          defaultType={defaultType}
+          onSuccess={() => setOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );
