@@ -1,75 +1,146 @@
-# React + TypeScript + Vite
+# 🚀 FinAI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> AI-Powered Personal Finance Platform with WhatsApp Integration
 
-Currently, two official plugins are available:
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 📖 Sobre
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+O **FinAI** é uma plataforma de gestão financeira que combina um dashboard web moderno com uma integração via WhatsApp para registrar receitas e despesas em linguagem natural.
 
-## Expanding the ESLint configuration
+O objetivo do projeto é evoluir para um assistente financeiro inteligente, capaz de analisar gastos, gerar insights e auxiliar na tomada de decisões financeiras.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ✨ Funcionalidades
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Dashboard Financeiro
+- Cadastro de Receitas e Despesas
+- Integração com WhatsApp
+- KPIs Financeiros
+- Gráficos Interativos
+- Insights Financeiros
+- React Query
+- Swagger
+- API REST
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
 
+## 🏗 Arquitetura
+
+```text
+React
+   │
+React Query
+   │
+NestJS
+   │
+Prisma
+   │
+SQLite
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🖥 Stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Frontend
+
+- React
+- Vite
+- TypeScript
+- TailwindCSS
+- React Query
+- React Hook Form
+- Recharts
+- shadcn/ui
+
+### Backend
+
+- NestJS
+- Prisma
+- SQLite
+- Swagger
+- Baileys
+
+---
+
+## 📂 Estrutura
+
+```text
+backend/
+frontend/
+docs/
+.github/
+```
+
+---
+
+## 🚀 Executando
+
+### Backend
+
+```bash
+npm install
+npm run start:dev
+```
+
+### Frontend
+
+```bash
+cd whatsapp-financas-web
+
+npm install
+
+npm run dev
+```
+
+---
+
+## 📘 Documentação
+
+- Roadmap
+- Arquitetura
+- API
+- Changelog
+- Contributing
+
+---
+
+## 🛣 Roadmap
+
+- Dashboard Premium
+- IA Financeira
+- OCR
+- Chat Financeiro
+- Multiusuário
+- Docker
+- Deploy
+
+---
+
+## 📸 Screenshots
+
+> Em construção
+
+---
+
+## 🤝 Contribuindo
+
+Veja o arquivo:
 
 ```
+docs/CONTRIBUTING.md
+```
+
+---
+
+## 📄 Licença
+
+MIT
