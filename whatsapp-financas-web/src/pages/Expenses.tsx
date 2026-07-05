@@ -1,9 +1,7 @@
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
 
 import { AppLayout } from "@/shared/layout/AppLayout";
 import { ErrorState } from "@/shared/feedback/error-state";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
