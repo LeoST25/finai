@@ -27,6 +27,11 @@ export function CreateExpenseDialog({
   const title =
     defaultType === "income" ? "Nova receita" : "Nova despesa";
 
+  const description =
+    defaultType === "income"
+      ? "Cadastre uma entrada financeira para acompanhar melhor seus ganhos."
+      : "Cadastre uma saída financeira para manter seu controle atualizado.";
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
@@ -36,9 +41,11 @@ export function CreateExpenseDialog({
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+
+          <p className="text-sm text-slate-500">{description}</p>
         </DialogHeader>
 
         <CreateExpenseForm
