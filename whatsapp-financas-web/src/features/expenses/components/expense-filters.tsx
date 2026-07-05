@@ -1,21 +1,25 @@
-import { Filter, RotateCcw } from "lucide-react";
+import { CalendarDays, Filter, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-type ExpenseFilterType = "all" | "income" | "expense";
+import type {
+  ExpenseFilterType,
+  ExpensePeriodFilter,
+} from "@/features/expenses/utils/expense-filters";
 
 type ExpensesFiltersProps = {
   search: string;
   type: ExpenseFilterType;
   category: string;
+  period: ExpensePeriodFilter;
   categories: string[];
   total: number;
   filteredTotal: number;
   onSearchChange: (value: string) => void;
   onTypeChange: (value: ExpenseFilterType) => void;
   onCategoryChange: (value: string) => void;
+  onPeriodChange: (value: ExpensePeriodFilter) => void;
   onClearFilters: () => void;
 };
 
@@ -23,16 +27,21 @@ export function ExpensesFilters({
   search,
   type,
   category,
+  period,
   categories,
   total,
   filteredTotal,
   onSearchChange,
   onTypeChange,
   onCategoryChange,
+  onPeriodChange,
   onClearFilters,
 }: ExpensesFiltersProps) {
   const hasActiveFilters =
-    search.trim().length > 0 || type !== "all" || category !== "all";
+    search.trim().length > 0 ||
+    type !== "all" ||
+    category !== "all" ||
+    period !== "all";
 
   return (
     <Card>
@@ -92,12 +101,23 @@ export function ExpensesFilters({
             ))}
           </select>
 
-          <select
-            className="h-10 rounded-md border bg-slate-50 px-3 text-sm text-slate-400"
-            disabled
-          >
-            <option>Período em breve</option>
-          </select>
+          <div className="relative">
+            <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+
+            <select
+              className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm"
+              value={period}
+              onChange={(event) =>
+                onPeriodChange(event.target.value as ExpensePeriodFilter)
+              }
+            >
+              <option value="all">Todos os períodos</option>
+              <option value="today">Hoje</option>
+              <option value="last7days">Últimos 7 dias</option>
+              <option value="last30days">Últimos 30 dias</option>
+              <option value="currentMonth">Mês atual</option>
+            </select>
+          </div>
         </div>
       </CardContent>
     </Card>

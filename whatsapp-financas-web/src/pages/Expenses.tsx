@@ -12,9 +12,9 @@ import { getExpensesSummary } from "@/features/expenses/utils/expense-summary";
 import {
   filterExpenses,
   getExpenseCategories,
+  type ExpenseFilterType,
+  type ExpensePeriodFilter,
 } from "@/features/expenses/utils/expense-filters";
-
-type ExpenseFilterType = "all" | "income" | "expense";
 
 export function Expenses() {
   const { data = [], isLoading, error } = useExpenses();
@@ -22,6 +22,7 @@ export function Expenses() {
   const [search, setSearch] = useState("");
   const [type, setType] = useState<ExpenseFilterType>("all");
   const [category, setCategory] = useState("all");
+  const [period, setPeriod] = useState<ExpensePeriodFilter>("all");
 
   const categories = useMemo(() => getExpenseCategories(data), [data]);
 
@@ -31,8 +32,9 @@ export function Expenses() {
         search,
         type,
         category,
+        period,
       }),
-    [data, search, type, category],
+    [data, search, type, category, period],
   );
 
   const summary = useMemo(
@@ -44,6 +46,7 @@ export function Expenses() {
     setSearch("");
     setType("all");
     setCategory("all");
+    setPeriod("all");
   }
 
   if (error) {
@@ -80,12 +83,14 @@ export function Expenses() {
           search={search}
           type={type}
           category={category}
+          period={period}
           categories={categories}
           total={data.length}
           filteredTotal={filteredExpenses.length}
           onSearchChange={setSearch}
           onTypeChange={setType}
           onCategoryChange={setCategory}
+          onPeriodChange={setPeriod}
           onClearFilters={handleClearFilters}
         />
 
