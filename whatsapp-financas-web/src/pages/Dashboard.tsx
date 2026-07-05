@@ -2,13 +2,10 @@ import { AppLayout } from "@/shared/layout/AppLayout";
 import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
-
 import { getDashboardSummary } from "@/features/dashboard/dashboard-summary";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
-
-import { CreateExpenseForm } from "@/features/expenses/components/create-expense-form";
 
 import {
   DashboardActionsWidget,
@@ -53,8 +50,6 @@ export function Dashboard() {
         <DashboardInsightsWidget expenses={data} />
 
         <DashboardActionsWidget />
-
-        <CreateExpenseForm />
 
         <DashboardTransactionsWidget expenses={data} />
 
