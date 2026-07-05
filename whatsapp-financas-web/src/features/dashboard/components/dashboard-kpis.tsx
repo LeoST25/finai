@@ -1,4 +1,9 @@
-import { ArrowDownCircle, ArrowUpCircle, Landmark, Receipt } from "lucide-react";
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Landmark,
+  Receipt,
+} from "lucide-react";
 
 import { KpiCard } from "./kpi-card";
 import { formatCurrency } from "@/utils/format-currency";
@@ -16,7 +21,7 @@ export function DashboardKpis({ summary }: DashboardKpisProps) {
   const savings = summary.income - summary.expense;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
       <KpiCard
         title="Saldo atual"
         value={formatCurrency(summary.balance)}
