@@ -5,7 +5,7 @@ import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
 import { CreateExpenseDialog } from "@/features/expenses/components/create-expense-dialog";
-import { ExpensesExportButton } from "@/features/dashboard/components/expenses-export-button";
+import { ExpensesExportButton } from "@/features/expenses/components/expenses-export-button";
 import { ExpensesList } from "@/features/expenses/components/expenses-list";
 import { ExpensesSummary } from "@/features/expenses/components/expense-summary";
 import { ExpensesFilters } from "@/features/expenses/components/expense-filters";
