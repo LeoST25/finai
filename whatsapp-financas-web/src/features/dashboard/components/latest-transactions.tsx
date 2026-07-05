@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   ArrowDownCircle,
   ArrowUpCircle,
@@ -9,6 +11,7 @@ import {
 } from "lucide-react";
 
 import type { Expense } from "@/features/expenses/types/expense";
+import { useDeleteExpense } from "@/features/expenses/hooks/use-delete-expense";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/shared/feedback/empty-state";
 import { DashboardWidget } from "@/shared/ui/components/dashboard-widget";
@@ -47,6 +50,10 @@ const transactionStyles = {
 };
 
 export function LatestTransactions({ expenses }: Props) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const deleteExpense = useDeleteExpense();
+
   const latest = [...expenses]
     .sort(
       (a, b) =>
@@ -54,6 +61,28 @@ export function LatestTransactions({ expenses }: Props) {
         new Date(a.createdAt).getTime(),
     )
     .slice(0, 8);
+
+  function handleDelete(expense: Expense) {
+    const confirmed = window.confirm(
+      `Deseja excluir o lançamento "${expense.description}"?`,
+    );
+
+    if (!confirmed) return;
+
+    setDeletingId(expense.id);
+
+    deleteExpense.mutate(expense.id, {
+      onSuccess: () => {
+        toast.success("Lançamento excluído com sucesso.");
+      },
+      onError: () => {
+        toast.error("Não foi possível excluir o lançamento.");
+      },
+      onSettled: () => {
+        setDeletingId(null);
+      },
+    });
+  }
 
   return (
     <DashboardWidget
@@ -71,6 +100,7 @@ export function LatestTransactions({ expenses }: Props) {
           {latest.map((expense) => {
             const style = transactionStyles[expense.type];
             const Icon = style.icon;
+            const isDeleting = deletingId === expense.id;
 
             return (
               <div
@@ -135,9 +165,10 @@ export function LatestTransactions({ expenses }: Props) {
 
                     <button
                       type="button"
-                      disabled
                       title="Excluir lançamento"
-                      className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={isDeleting}
+                      onClick={() => handleDelete(expense)}
+                      className="flex h-8 w-8 items-center justify-center rounded-md text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
