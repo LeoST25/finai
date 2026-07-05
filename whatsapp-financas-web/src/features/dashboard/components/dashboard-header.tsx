@@ -1,6 +1,6 @@
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { CreateExpenseDialog } from "@/features/expenses/components/create-expense-dialog";
 
 type DashboardHeaderProps = {
   user: {
@@ -78,10 +78,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             )}
           </div>
 
-          <Button variant="secondary">
-            <Plus className="mr-2 h-4 w-4" />
-            Novo lançamento
-          </Button>
+          <CreateExpenseDialog triggerVariant="secondary" />
         </div>
       </div>
     </section>
