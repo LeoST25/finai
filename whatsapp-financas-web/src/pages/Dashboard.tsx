@@ -2,6 +2,7 @@ import { AppLayout } from "@/shared/layout/AppLayout";
 import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
+
 import { getDashboardSummary } from "@/features/dashboard/dashboard-summary";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
