@@ -40,7 +40,7 @@ export function CategoryChart({ expenses }: Props) {
       title="Despesas por categoria"
       description="Distribuição dos gastos por categoria."
     >
-      <div className="h-80">
+      <div className="h-72 overflow-x-auto sm:h-80">
         {data.length === 0 ? (
           <EmptyState
             icon={ChartNoAxesColumn}
@@ -48,52 +48,55 @@ export function CategoryChart({ expenses }: Props) {
             description="Registre despesas para visualizar quais categorias mais impactam seu orçamento."
           />
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              margin={{
-                top: 12,
-                right: 8,
-                left: 8,
-                bottom: 24,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <div className="h-full min-w-[520px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data}
+                margin={{
+                  top: 12,
+                  right: 8,
+                  left: 8,
+                  bottom: 24,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
 
-              <XAxis
-                dataKey="category"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={12}
-                fontSize={12}
-              />
+                <XAxis
+                  dataKey="category"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={12}
+                  fontSize={12}
+                />
 
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                fontSize={12}
-                tickFormatter={(value) => formatCurrency(Number(value))}
-              />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={12}
+                  width={80}
+                  tickFormatter={(value) => formatCurrency(Number(value))}
+                />
 
-              <Tooltip
-                cursor={{ fill: "rgba(15, 23, 42, 0.06)" }}
-                formatter={(value, _name, item) => [
-                  formatCurrency(Number(value)),
-                  `${item.payload.percentage.toFixed(1)}% do total`,
-                ]}
-                labelFormatter={(label) => `Categoria: ${label}`}
-              />
+                <Tooltip
+                  cursor={{ fill: "rgba(15, 23, 42, 0.06)" }}
+                  formatter={(value, _name, item) => [
+                    formatCurrency(Number(value)),
+                    `${item.payload.percentage.toFixed(1)}% do total`,
+                  ]}
+                  labelFormatter={(label) => `Categoria: ${label}`}
+                />
 
-              <Bar dataKey="total" name="Total" radius={[10, 10, 0, 0]}>
-                {data.map((item, index) => (
-                  <Cell
-                    key={item.category}
-                    fill={categoryColors[index % categoryColors.length]}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                <Bar dataKey="total" name="Total" radius={[10, 10, 0, 0]}>
+                  {data.map((item, index) => (
+                    <Cell
+                      key={item.category}
+                      fill={categoryColors[index % categoryColors.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </div>
     </DashboardWidget>

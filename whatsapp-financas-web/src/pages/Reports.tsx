@@ -51,25 +51,25 @@ export function Reports() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
-        <section className="flex flex-col gap-4 rounded-3xl border bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+      <div className="mx-auto w-full max-w-7xl space-y-4 sm:space-y-6">
+        <section className="flex flex-col gap-5 rounded-2xl border bg-white p-5 shadow-sm sm:rounded-3xl sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Relatórios
             </h1>
 
-            <p className="mt-1 text-slate-500">
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
               Analise padrões, categorias, tendências e insights das suas
               finanças.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="grid gap-2 sm:flex sm:items-center">
             <div className="relative">
               <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
 
               <select
-                className="h-10 rounded-md border bg-background pl-9 pr-3 text-sm"
+                className="h-10 w-full rounded-md border bg-background pl-9 pr-3 text-sm sm:w-auto"
                 value={period}
                 onChange={(event) =>
                   setPeriod(event.target.value as ExpensePeriodFilter)
@@ -88,6 +88,7 @@ export function Reports() {
                 variant="outline"
                 size="sm"
                 onClick={() => setPeriod("all")}
+                className="w-full sm:w-auto"
               >
                 <RotateCcw className="mr-2 h-4 w-4" />
                 Limpar
@@ -96,8 +97,8 @@ export function Reports() {
           </div>
         </section>
 
-        <Card>
-          <CardContent className="flex flex-col gap-1 p-5 md:flex-row md:items-center md:justify-between">
+        <Card className="rounded-2xl">
+          <CardContent className="flex flex-col gap-1 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
             <p className="text-sm font-medium text-slate-700">
               Lançamentos analisados
             </p>
@@ -110,7 +111,7 @@ export function Reports() {
         </Card>
 
         {isLoading ? (
-          <div className="rounded-2xl border bg-white p-6 text-sm text-slate-500">
+          <div className="rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
             Carregando relatórios...
           </div>
         ) : (
@@ -119,7 +120,7 @@ export function Reports() {
 
             <DashboardInsightsWidget expenses={filteredExpenses} />
 
-            <div className="grid gap-6 xl:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 xl:grid-cols-2">
               <CategoryChart expenses={filteredExpenses} />
               <MonthlyChart expenses={filteredExpenses} />
             </div>

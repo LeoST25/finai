@@ -11,6 +11,7 @@ type DashboardWidgetProps = {
   action?: ReactNode;
   children: ReactNode;
   className?: string;
+  contentClassName?: string;
 };
 
 export function DashboardWidget({
@@ -19,33 +20,38 @@ export function DashboardWidget({
   action,
   children,
   className,
+  contentClassName,
 }: DashboardWidgetProps) {
   return (
     <Card
       className={cn(
-        "rounded-2xl border shadow-sm transition-all hover:shadow-md",
+        "overflow-hidden rounded-2xl border shadow-sm transition-all hover:shadow-md",
         className,
       )}
     >
-      <div className="flex items-start justify-between border-b px-6 py-5">
-        <div>
+      <div className="flex items-start justify-between gap-4 border-b px-4 py-4 sm:px-6 sm:py-5">
+        <div className="min-w-0">
           <h3 className="text-base font-semibold">{title}</h3>
 
           {description && (
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm leading-relaxed text-slate-500">
               {description}
             </p>
           )}
         </div>
 
-        {action ?? (
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        )}
+        <div className="shrink-0">
+          {action ?? (
+            <Button variant="ghost" size="icon">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="p-6">{children}</div>
+      <div className={cn("p-4 sm:p-6", contentClassName)}>
+        {children}
+      </div>
     </Card>
   );
 }
