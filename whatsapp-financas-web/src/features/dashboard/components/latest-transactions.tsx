@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/feedback/empty-state";
+import { EmptyState } from "@/shared/feedback/empty-state";
 
 type Props = {
   expenses: Expense[];

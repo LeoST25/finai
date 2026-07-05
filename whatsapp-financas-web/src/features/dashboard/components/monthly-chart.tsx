@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { EmptyState } from "@/components/feedback/empty-state";
+import { EmptyState } from "@/shared/feedback/empty-state";
 
 type Props = {
   expenses: Expense[];
