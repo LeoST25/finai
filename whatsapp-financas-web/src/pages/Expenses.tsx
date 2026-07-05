@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
 import { CreateExpenseDialog } from "@/features/expenses/components/create-expense-dialog";
 import { ExpensesList } from "@/features/expenses/components/expenses-list";
+import { ExpensesSummary } from "@/features/expenses/components/expense-summary";
+import { getExpensesSummary } from "@/features/expenses/utils/expense-summary";
 import {
   filterExpenses,
   getExpenseCategories,
@@ -30,6 +32,11 @@ export function Expenses() {
         category,
       }),
     [data, search, type, category],
+  );
+
+  const summary = useMemo(
+    () => getExpensesSummary(filteredExpenses),
+    [filteredExpenses],
   );
 
   if (error) {
@@ -59,6 +66,8 @@ export function Expenses() {
             triggerVariant="default"
           />
         </section>
+
+        <ExpensesSummary summary={summary} />
 
         <Card>
           <CardHeader>
