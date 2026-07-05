@@ -77,7 +77,7 @@ export function CategoryChart({ expenses }: Props) {
 
               <Tooltip
                 cursor={{ fill: "rgba(15, 23, 42, 0.06)" }}
-                formatter={(value, name, item) => [
+                formatter={(value, _name, item) => [
                   formatCurrency(Number(value)),
                   `${item.payload.percentage.toFixed(1)}% do total`,
                 ]}
