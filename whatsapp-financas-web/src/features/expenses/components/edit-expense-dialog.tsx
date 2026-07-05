@@ -1,96 +1,50 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { Pencil } from "lucide-react";
+
 import type { Expense } from "@/features/expenses/types/expense";
-import { useUpdateExpense } from "@/features/expenses/hooks/use-update-expense";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
+import { CreateExpenseForm } from "./create-expense-form";
 
-type FormData = {
-  description: string;
-  category: string;
-  value: number;
-  type: "income" | "expense";
-};
-
-type Props = {
+type EditExpenseDialogProps = {
   expense: Expense;
 };
 
-export function EditExpenseDialog({ expense }: Props) {
-  const updateExpense = useUpdateExpense();
-
-  const { register, handleSubmit, reset } = useForm<FormData>({
-    defaultValues: {
-      description: expense.description,
-      category: expense.category,
-      value: expense.value,
-      type: expense.type,
-    },
-  });
-
-  useEffect(() => {
-    reset({
-      description: expense.description,
-      category: expense.category,
-      value: expense.value,
-      type: expense.type,
-    });
-  }, [expense, reset]);
-
-  function onSubmit(data: FormData) {
-    updateExpense.mutate({
-      id: expense.id,
-      ...data,
-    });
-  }
+export function EditExpenseDialog({ expense }: EditExpenseDialogProps) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <Dialog>
-      <DialogTrigger>
-        <Button variant="outline" size="sm">
-          <Pencil className="mr-2 h-4 w-4" />
-          Editar
-        </Button>
-      </DialogTrigger>
+    <>
+      <button
+        type="button"
+        title="Editar lançamento"
+        onClick={() => setOpen(true)}
+        className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+      >
+        <Pencil className="h-4 w-4" />
+      </button>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Editar lançamento</DialogTitle>
-        </DialogHeader>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Editar lançamento</DialogTitle>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input placeholder="Descrição" {...register("description")} />
+            <p className="text-sm text-slate-500">
+              Atualize as informações deste lançamento financeiro.
+            </p>
+          </DialogHeader>
 
-          <Input placeholder="Categoria" {...register("category")} />
-
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Valor"
-            {...register("value", { valueAsNumber: true })}
+          <CreateExpenseForm
+            mode="edit"
+            expense={expense}
+            onSuccess={() => setOpen(false)}
           />
-
-          <select
-            className="h-10 w-full rounded-md border bg-background px-3 text-sm"
-            {...register("type")}
-          >
-            <option value="expense">Despesa</option>
-            <option value="income">Receita</option>
-          </select>
-
-          <Button type="submit" disabled={updateExpense.isPending}>
-            {updateExpense.isPending ? "Salvando..." : "Salvar alterações"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

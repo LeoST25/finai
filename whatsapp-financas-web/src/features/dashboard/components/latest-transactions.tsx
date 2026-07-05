@@ -5,13 +5,13 @@ import {
   ArrowUpCircle,
   CalendarDays,
   MoreHorizontal,
-  Pencil,
   Receipt,
   Trash2,
 } from "lucide-react";
 
 import type { Expense } from "@/features/expenses/types/expense";
 import { useDeleteExpense } from "@/features/expenses/hooks/use-delete-expense";
+import { EditExpenseDialog } from "@/features/expenses/components/edit-expense-dialog";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/shared/feedback/empty-state";
 import { DashboardWidget } from "@/shared/ui/components/dashboard-widget";
@@ -154,14 +154,7 @@ export function LatestTransactions({ expenses }: Props) {
                   </p>
 
                   <div className="flex items-center gap-1 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
-                    <button
-                      type="button"
-                      disabled
-                      title="Editar lançamento"
-                      className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
+                    <EditExpenseDialog expense={expense} />
 
                     <button
                       type="button"

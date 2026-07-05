@@ -1,10 +1,16 @@
+import { useEffect } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import type {
+  Expense,
+  ExpenseType,
+} from "@/features/expenses/types/expense";
 import { useCreateExpense } from "@/features/expenses/hooks/use-create-expense";
+import { useUpdateExpense } from "@/features/expenses/hooks/use-update-expense";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -40,6 +46,12 @@ function normalizeCurrencyValue(value: string) {
   return Number(sanitizedValue);
 }
 
+function formatValueForInput(value?: number) {
+  if (value === undefined) return "";
+
+  return String(value).replace(".", ",");
+}
+
 const schema = z.object({
   description: z.string().min(2, "Informe uma descrição"),
   category: z.string().min(2, "Selecione uma categoria"),
@@ -55,15 +67,22 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 type CreateExpenseFormProps = {
-  defaultType?: "income" | "expense";
+  mode?: "create" | "edit";
+  defaultType?: ExpenseType;
+  expense?: Expense;
   onSuccess?: () => void;
 };
 
 export function CreateExpenseForm({
+  mode = "create",
   defaultType = "expense",
+  expense,
   onSuccess,
 }: CreateExpenseFormProps) {
   const createExpense = useCreateExpense();
+  const updateExpense = useUpdateExpense();
+
+  const isEditMode = mode === "edit" && expense;
 
   const {
     register,
@@ -75,53 +94,92 @@ export function CreateExpenseForm({
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      description: "",
-      category: "",
-      value: "",
-      type: defaultType,
+      description: expense?.description ?? "",
+      category: expense?.category ?? "",
+      value: formatValueForInput(expense?.value),
+      type: expense?.type ?? defaultType,
     },
   });
 
   const selectedType = watch("type");
+  const selectedCategory = watch("category");
 
-  const categories =
+  const baseCategories =
     selectedType === "income" ? incomeCategories : expenseCategories;
 
-  function handleTypeChange(type: "income" | "expense") {
+  const categories =
+    selectedCategory && !baseCategories.includes(selectedCategory)
+      ? [selectedCategory, ...baseCategories]
+      : baseCategories;
+
+  const isPending = createExpense.isPending || updateExpense.isPending;
+
+  useEffect(() => {
+    reset({
+      description: expense?.description ?? "",
+      category: expense?.category ?? "",
+      value: formatValueForInput(expense?.value),
+      type: expense?.type ?? defaultType,
+    });
+  }, [expense, defaultType, reset]);
+
+  function handleTypeChange(type: ExpenseType) {
     setValue("type", type);
-    setValue("category", "");
+
+    if (type !== selectedType) {
+      setValue("category", "");
+    }
   }
 
   function onSubmit(data: FormData) {
-    createExpense.mutate(
-      {
-        description: data.description,
-        category: data.category,
-        value: normalizeCurrencyValue(data.value),
-        type: data.type,
-      },
-      {
-        onSuccess: () => {
-          toast.success(
-            data.type === "income"
-              ? "Receita cadastrada com sucesso."
-              : "Despesa cadastrada com sucesso.",
-          );
+    const payload = {
+      description: data.description,
+      category: data.category,
+      value: normalizeCurrencyValue(data.value),
+      type: data.type,
+    };
 
-          reset({
-            description: "",
-            category: "",
-            value: "",
-            type: defaultType,
-          });
+    if (isEditMode) {
+      updateExpense.mutate(
+        {
+          id: expense.id,
+          ...payload,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Lançamento atualizado com sucesso.");
+            onSuccess?.();
+          },
+          onError: () => {
+            toast.error("Não foi possível atualizar o lançamento.");
+          },
+        },
+      );
 
-          onSuccess?.();
-        },
-        onError: () => {
-          toast.error("Não foi possível cadastrar o lançamento.");
-        },
+      return;
+    }
+
+    createExpense.mutate(payload, {
+      onSuccess: () => {
+        toast.success(
+          data.type === "income"
+            ? "Receita cadastrada com sucesso."
+            : "Despesa cadastrada com sucesso.",
+        );
+
+        reset({
+          description: "",
+          category: "",
+          value: "",
+          type: defaultType,
+        });
+
+        onSuccess?.();
       },
-    );
+      onError: () => {
+        toast.error("Não foi possível cadastrar o lançamento.");
+      },
+    });
   }
 
   return (
@@ -201,13 +259,18 @@ export function CreateExpenseForm({
         )}
       </div>
 
-      <Button
-        type="submit"
-        disabled={createExpense.isPending}
-        className="w-full"
-      >
-        <PlusCircle className="mr-2 h-4 w-4" />
-        {createExpense.isPending ? "Salvando..." : "Cadastrar lançamento"}
+      <Button type="submit" disabled={isPending} className="w-full">
+        {isEditMode ? (
+          <Save className="mr-2 h-4 w-4" />
+        ) : (
+          <PlusCircle className="mr-2 h-4 w-4" />
+        )}
+
+        {isPending
+          ? "Salvando..."
+          : isEditMode
+            ? "Salvar alterações"
+            : "Cadastrar lançamento"}
       </Button>
     </form>
   );
