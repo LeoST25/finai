@@ -29,6 +29,32 @@ function isExpense(expense: Expense) {
   return expense.type === "expense";
 }
 
+function getExpenseDate(expense: Expense) {
+  const record = expense as Expense & {
+    date?: string | Date;
+    createdAt?: string | Date;
+  };
+
+  return record.date ?? record.createdAt ?? new Date();
+}
+
+function isSameMonth(date: Date, reference: Date) {
+  return (
+    date.getMonth() === reference.getMonth() &&
+    date.getFullYear() === reference.getFullYear()
+  );
+}
+
+function isPreviousMonth(date: Date, reference: Date) {
+  const previousMonth = new Date(reference);
+  previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+  return (
+    date.getMonth() === previousMonth.getMonth() &&
+    date.getFullYear() === previousMonth.getFullYear()
+  );
+}
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -37,6 +63,8 @@ function formatCurrency(value: number) {
 }
 
 export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
+  const now = new Date();
+
   const income = expenses
     .filter(isIncome)
     .reduce((total, expense) => total + getAmount(expense), 0);
@@ -48,6 +76,22 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
   const balance = income - totalExpenses;
   const savingsRate = income > 0 ? (balance / income) * 100 : 0;
 
+  const currentMonthExpenses = expenses.filter((expense) =>
+    isSameMonth(new Date(getExpenseDate(expense)), now),
+  );
+
+  const previousMonthExpenses = expenses.filter((expense) =>
+    isPreviousMonth(new Date(getExpenseDate(expense)), now),
+  );
+
+  const currentMonthTotal = currentMonthExpenses
+    .filter(isExpense)
+    .reduce((total, expense) => total + getAmount(expense), 0);
+
+  const previousMonthTotal = previousMonthExpenses
+    .filter(isExpense)
+    .reduce((total, expense) => total + getAmount(expense), 0);
+
   let score = 50;
 
   if (balance > 0) score += 20;
@@ -55,6 +99,9 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
   if (savingsRate >= 20) score += 10;
   if (totalExpenses > income) score -= 25;
   if (income === 0 && totalExpenses > 0) score -= 20;
+  if (currentMonthTotal > previousMonthTotal && previousMonthTotal > 0) {
+    score -= 5;
+  }
 
   score = Math.max(0, Math.min(100, score));
 
@@ -126,6 +173,46 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
       description: `${topCategory[0]} concentra ${formatCurrency(
         topCategory[1],
       )} em despesas.`,
+    });
+  }
+
+  if (previousMonthTotal > 0) {
+    const variation =
+      ((currentMonthTotal - previousMonthTotal) / previousMonthTotal) * 100;
+
+    if (variation > 20) {
+      insights.push({
+        type: "warning",
+        title: "Despesas em alta",
+        description: `Seus gastos deste mês estão ${variation.toFixed(
+          1,
+        )}% maiores que no mês anterior.`,
+      });
+    }
+
+    if (variation < -10) {
+      insights.push({
+        type: "success",
+        title: "Despesas em queda",
+        description: `Você reduziu seus gastos em ${Math.abs(variation).toFixed(
+          1,
+        )}% em comparação ao mês anterior.`,
+      });
+    }
+  }
+
+  const today = now.getDate();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+  if (today > 0 && currentMonthTotal > 0) {
+    const projectedExpenses = (currentMonthTotal / today) * daysInMonth;
+
+    insights.push({
+      type: projectedExpenses > income && income > 0 ? "warning" : "info",
+      title: "Projeção do mês",
+      description: `No ritmo atual, suas despesas podem chegar a ${formatCurrency(
+        projectedExpenses,
+      )} até o fim do mês.`,
     });
   }
 
