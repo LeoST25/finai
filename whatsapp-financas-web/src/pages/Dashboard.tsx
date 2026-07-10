@@ -1,3 +1,5 @@
+import { Suspense, lazy } from "react";
+
 import { AppLayout } from "@/shared/layout/AppLayout";
 import { ErrorState } from "@/shared/feedback/error-state";
 
@@ -9,11 +11,24 @@ import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-ske
 
 import {
   DashboardActionsWidget,
-  DashboardChartsWidget,
   DashboardInsightsWidget,
   DashboardKpisWidget,
   DashboardTransactionsWidget,
 } from "@/features/dashboard/widgets";
+
+const DashboardChartsWidget = lazy(() =>
+  import("@/features/dashboard/widgets").then((module) => ({
+    default: module.DashboardChartsWidget,
+  })),
+);
+
+function DashboardChartsLoader() {
+  return (
+    <div className="min-h-[320px] rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
+      Carregando gráficos...
+    </div>
+  );
+}
 
 export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
@@ -53,7 +68,9 @@ export function Dashboard() {
 
         <DashboardTransactionsWidget expenses={data} />
 
-        <DashboardChartsWidget expenses={data} />
+        <Suspense fallback={<DashboardChartsLoader />}>
+          <DashboardChartsWidget expenses={data} />
+        </Suspense>
       </div>
     </AppLayout>
   );

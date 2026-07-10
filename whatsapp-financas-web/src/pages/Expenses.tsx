@@ -1,12 +1,10 @@
-import { useMemo, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 
 import { AppLayout } from "@/shared/layout/AppLayout";
 import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
-import { CreateExpenseDialog } from "@/features/expenses/components/create-expense-dialog";
 import { ExpensesExportButton } from "@/features/expenses/components/expenses-export-button";
-import { ExpensesList } from "@/features/expenses/components/expenses-list";
 import { ExpensesSummary } from "@/features/expenses/components/expense-summary";
 import { ExpensesFilters } from "@/features/expenses/components/expense-filters";
 import { getExpensesSummary } from "@/features/expenses/utils/expense-summary";
@@ -16,6 +14,28 @@ import {
   type ExpenseFilterType,
   type ExpensePeriodFilter,
 } from "@/features/expenses/utils/expense-filters";
+
+const CreateExpenseDialog = lazy(() =>
+  import("@/features/expenses/components/create-expense-dialog").then(
+    (module) => ({
+      default: module.CreateExpenseDialog,
+    }),
+  ),
+);
+
+const ExpensesList = lazy(() =>
+  import("@/features/expenses/components/expenses-list").then((module) => ({
+    default: module.ExpensesList,
+  })),
+);
+
+function ExpensesContentLoader() {
+  return (
+    <div className="rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
+      Carregando...
+    </div>
+  );
+}
 
 export function Expenses() {
   const { data = [], isLoading, error } = useExpenses();
@@ -79,10 +99,12 @@ export function Expenses() {
               disabled={isLoading}
             />
 
-            <CreateExpenseDialog
-              triggerLabel="Novo lançamento"
-              triggerVariant="default"
-            />
+            <Suspense fallback={<ExpensesContentLoader />}>
+              <CreateExpenseDialog
+                triggerLabel="Novo lançamento"
+                triggerVariant="default"
+              />
+            </Suspense>
           </div>
         </section>
 
@@ -103,11 +125,13 @@ export function Expenses() {
           onClearFilters={handleClearFilters}
         />
 
-        <ExpensesList
-          expenses={filteredExpenses}
-          isLoading={isLoading}
-          total={data.length}
-        />
+        <Suspense fallback={<ExpensesContentLoader />}>
+          <ExpensesList
+            expenses={filteredExpenses}
+            isLoading={isLoading}
+            total={data.length}
+          />
+        </Suspense>
       </div>
     </AppLayout>
   );

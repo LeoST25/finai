@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import { CalendarDays, RotateCcw } from "lucide-react";
 
 import { AppLayout } from "@/shared/layout/AppLayout";
@@ -17,8 +17,26 @@ import {
   DashboardInsightsWidget,
   DashboardKpisWidget,
 } from "@/features/dashboard/widgets";
-import { CategoryChart } from "@/features/dashboard/components/category-chart";
-import { MonthlyChart } from "@/features/dashboard/components/monthly-chart";
+
+const CategoryChart = lazy(() =>
+  import("@/features/dashboard/components/category-chart").then((module) => ({
+    default: module.CategoryChart,
+  })),
+);
+
+const MonthlyChart = lazy(() =>
+  import("@/features/dashboard/components/monthly-chart").then((module) => ({
+    default: module.MonthlyChart,
+  })),
+);
+
+function ChartLoader() {
+  return (
+    <div className="min-h-[320px] rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
+      Carregando gráfico...
+    </div>
+  );
+}
 
 export function Reports() {
   const { data = [], isLoading, error } = useExpenses();
@@ -120,10 +138,12 @@ export function Reports() {
 
             <DashboardInsightsWidget expenses={filteredExpenses} />
 
-            <div className="grid gap-4 sm:gap-6 xl:grid-cols-2">
-              <CategoryChart expenses={filteredExpenses} />
-              <MonthlyChart expenses={filteredExpenses} />
-            </div>
+            <Suspense fallback={<ChartLoader />}>
+              <div className="grid gap-4 sm:gap-6 xl:grid-cols-2">
+                <CategoryChart expenses={filteredExpenses} />
+                <MonthlyChart expenses={filteredExpenses} />
+              </div>
+            </Suspense>
           </>
         )}
       </div>
