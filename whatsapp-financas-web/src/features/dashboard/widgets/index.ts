@@ -3,3 +3,4 @@ export * from "./dashboard-charts-widget";
 export * from "./dashboard-insights-widget";
 export * from "./dashboard-kpis-widget";
 export * from "./dashboard-transactions-widget";
+export * from "./dashboard-ai-widget";

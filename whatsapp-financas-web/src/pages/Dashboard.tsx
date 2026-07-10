@@ -5,12 +5,14 @@ import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
 import { getDashboardSummary } from "@/features/dashboard/dashboard-summary";
+import { analyzeFinancialData } from "@/features/dashboard/ai/financial-analyzer";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
 
 import {
   DashboardActionsWidget,
+  DashboardAiWidget,
   DashboardInsightsWidget,
   DashboardKpisWidget,
   DashboardTransactionsWidget,
@@ -34,6 +36,7 @@ export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
 
   const summary = getDashboardSummary(data);
+  const financialAnalysis = analyzeFinancialData(data);
 
   if (isLoading) {
     return (
@@ -61,6 +64,8 @@ export function Dashboard() {
         />
 
         <DashboardKpisWidget summary={summary} />
+
+        <DashboardAiWidget analysis={financialAnalysis} />
 
         <DashboardInsightsWidget expenses={data} />
 
