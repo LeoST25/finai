@@ -8,6 +8,12 @@ export type FinancialInsight = {
   type: FinancialInsightType;
 };
 
+export type FinancialRecommendation = {
+  title: string;
+  description: string;
+  estimatedImpact?: string;
+};
+
 export type FinancialAnalysis = {
   score: number;
   balance: number;
@@ -15,6 +21,7 @@ export type FinancialAnalysis = {
   expenses: number;
   savingsRate: number;
   insights: FinancialInsight[];
+  recommendations: FinancialRecommendation[];
 };
 
 function getAmount(expense: Expense) {
@@ -106,6 +113,7 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
   score = Math.max(0, Math.min(100, score));
 
   const insights: FinancialInsight[] = [];
+  const recommendations: FinancialRecommendation[] = [];
 
   if (balance > 0) {
     insights.push({
@@ -123,6 +131,15 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
         Math.abs(balance),
       )}.`,
     });
+
+    recommendations.push({
+      title: "Reduza gastos variáveis",
+      description:
+        "Priorize cortar gastos não essenciais até recuperar o saldo positivo.",
+      estimatedImpact: `Meta inicial: reduzir pelo menos ${formatCurrency(
+        Math.abs(balance),
+      )}.`,
+    });
   }
 
   if (savingsRate >= 20) {
@@ -133,6 +150,13 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
         1,
       )}% da sua renda.`,
     });
+
+    recommendations.push({
+      title: "Continue fortalecendo sua reserva",
+      description:
+        "Sua taxa de economia está saudável. Direcione parte desse saldo para reserva de emergência ou objetivos financeiros.",
+      estimatedImpact: `${savingsRate.toFixed(1)}% da renda preservada.`,
+    });
   }
 
   if (income > 0 && savingsRate < 10 && balance > 0) {
@@ -141,6 +165,13 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
       title: "Economia baixa",
       description:
         "Você está fechando positivo, mas sua taxa de economia ainda está baixa.",
+    });
+
+    recommendations.push({
+      title: "Aumente sua margem de economia",
+      description:
+        "Tente elevar sua economia mensal para pelo menos 10% da renda.",
+      estimatedImpact: `Meta sugerida: ${formatCurrency(income * 0.1)} por mês.`,
     });
   }
 
@@ -167,13 +198,27 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
   )[0];
 
   if (topCategory) {
+    const [categoryName, categoryTotal] = topCategory;
+    const suggestedReduction = categoryTotal * 0.15;
+
     insights.push({
       type: "info",
       title: "Maior categoria de gasto",
-      description: `${topCategory[0]} concentra ${formatCurrency(
-        topCategory[1],
+      description: `${categoryName} concentra ${formatCurrency(
+        categoryTotal,
       )} em despesas.`,
     });
+
+    if (categoryTotal > 0) {
+      recommendations.push({
+        title: `Revise gastos com ${categoryName}`,
+        description:
+          "Essa é sua maior categoria de despesa. Uma pequena redução nela pode gerar impacto relevante.",
+        estimatedImpact: `Reduzindo 15%, você economizaria cerca de ${formatCurrency(
+          suggestedReduction,
+        )}.`,
+      });
+    }
   }
 
   if (previousMonthTotal > 0) {
@@ -188,6 +233,15 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
           1,
         )}% maiores que no mês anterior.`,
       });
+
+      recommendations.push({
+        title: "Revisar aumento mensal",
+        description:
+          "Compare os lançamentos deste mês com o mês anterior e identifique quais gastos causaram o aumento.",
+        estimatedImpact: `Aumento detectado: ${formatCurrency(
+          currentMonthTotal - previousMonthTotal,
+        )}.`,
+      });
     }
 
     if (variation < -10) {
@@ -197,6 +251,15 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
         description: `Você reduziu seus gastos em ${Math.abs(variation).toFixed(
           1,
         )}% em comparação ao mês anterior.`,
+      });
+
+      recommendations.push({
+        title: "Mantenha o novo padrão",
+        description:
+          "Você conseguiu reduzir despesas. Tente manter esse patamar nos próximos meses.",
+        estimatedImpact: `Redução aproximada: ${formatCurrency(
+          previousMonthTotal - currentMonthTotal,
+        )}.`,
       });
     }
   }
@@ -214,6 +277,17 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
         projectedExpenses,
       )} até o fim do mês.`,
     });
+
+    if (projectedExpenses > income && income > 0) {
+      recommendations.push({
+        title: "Ajuste o ritmo de gastos",
+        description:
+          "Sua projeção indica risco de fechar o mês acima da renda. Reduza gastos nos próximos dias.",
+        estimatedImpact: `Necessário reduzir cerca de ${formatCurrency(
+          projectedExpenses - income,
+        )} até o fim do mês.`,
+      });
+    }
   }
 
   if (insights.length === 0) {
@@ -225,6 +299,14 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
     });
   }
 
+  if (recommendations.length === 0) {
+    recommendations.push({
+      title: "Continue registrando seus lançamentos",
+      description:
+        "Com mais dados, o FinAI poderá gerar recomendações mais específicas para sua rotina financeira.",
+    });
+  }
+
   return {
     score,
     balance,
@@ -232,5 +314,6 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
     expenses: totalExpenses,
     savingsRate,
     insights,
+    recommendations,
   };
 }

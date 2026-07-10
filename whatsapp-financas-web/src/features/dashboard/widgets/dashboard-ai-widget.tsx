@@ -32,14 +32,41 @@ export function DashboardAiWidget({ analysis }: DashboardAiWidgetProps) {
         {analysis.insights.map((insight) => (
           <div
             key={`${insight.title}-${insight.description}`}
-            className={`rounded-2xl border p-4 ${
-              insightStyle[insight.type]
-            }`}
+            className={`rounded-2xl border p-4 ${insightStyle[insight.type]}`}
           >
             <h3 className="text-sm font-semibold">{insight.title}</h3>
             <p className="mt-1 text-sm opacity-90">{insight.description}</p>
           </div>
         ))}
+      </div>
+
+      <div className="mt-6 rounded-2xl border bg-slate-50 p-4">
+        <h3 className="text-sm font-semibold text-slate-900">
+          Recomendações acionáveis
+        </h3>
+
+        <div className="mt-3 grid gap-3">
+          {analysis.recommendations.map((recommendation) => (
+            <div
+              key={`${recommendation.title}-${recommendation.description}`}
+              className="rounded-xl border bg-white p-4"
+            >
+              <p className="text-sm font-semibold text-slate-900">
+                {recommendation.title}
+              </p>
+
+              <p className="mt-1 text-sm text-slate-500">
+                {recommendation.description}
+              </p>
+
+              {recommendation.estimatedImpact && (
+                <p className="mt-2 text-sm font-medium text-slate-700">
+                  {recommendation.estimatedImpact}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
