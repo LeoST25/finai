@@ -16,7 +16,7 @@ export function DashboardAiWidget({ analysis }: DashboardAiWidgetProps) {
     <section className="rounded-2xl border bg-white p-5 shadow-sm sm:rounded-3xl sm:p-6">
       <div className="flex flex-col gap-1">
         <p className="text-sm font-medium text-slate-500">
-          Inteligência Financeira
+          🤖 FinAI Assistant
         </p>
 
         <h2 className="text-2xl font-bold tracking-tight">

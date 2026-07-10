@@ -13,7 +13,6 @@ import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-ske
 import {
   DashboardActionsWidget,
   DashboardAiWidget,
-  DashboardInsightsWidget,
   DashboardKpisWidget,
   DashboardTransactionsWidget,
 } from "@/features/dashboard/widgets";
@@ -66,8 +65,6 @@ export function Dashboard() {
         <DashboardKpisWidget summary={summary} />
 
         <DashboardAiWidget analysis={financialAnalysis} />
-
-        <DashboardInsightsWidget expenses={data} />
 
         <DashboardActionsWidget />
 
