@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { PlusCircle, Save } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import type {
@@ -88,8 +88,8 @@ export function CreateExpenseForm({
     register,
     handleSubmit,
     reset,
-    watch,
     setValue,
+    control,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -101,8 +101,15 @@ export function CreateExpenseForm({
     },
   });
 
-  const selectedType = watch("type");
-  const selectedCategory = watch("category");
+  const selectedType = useWatch({
+  control,
+  name: "type",
+});
+
+const selectedCategory = useWatch({
+  control,
+  name: "category",
+});
 
   const baseCategories =
     selectedType === "income" ? incomeCategories : expenseCategories;

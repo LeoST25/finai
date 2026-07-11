@@ -5,7 +5,11 @@ import { generateFinancialInsights } from "@/features/dashboard/ai/financial-ins
 import { generateFinancialRecommendations } from "@/features/dashboard/ai/financial-recommendations";
 import type { FinancialAnalysis } from "@/features/dashboard/ai/types";
 
-export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
+import type { FinancialGoalWithProgress } from "@/features/goals/hooks";
+import { analyzeFinancialGoals } from "./goal-analyzer";
+
+export function analyzeFinancialData(expenses: Expense[], goals: FinancialGoalWithProgress[] = [],): FinancialAnalysis {
+  const goalAnalysis = analyzeFinancialGoals(goals);
   const metrics = calculateFinancialMetrics(expenses);
   const score = calculateFinancialScore(metrics);
   const insights = generateFinancialInsights(metrics);
@@ -15,10 +19,13 @@ export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {
     score,
     balance: metrics.balance,
     income: metrics.income,
-    expenses: metrics.totalExpenses,
+    totalExpenses: metrics.totalExpenses,
     savingsRate: metrics.savingsRate,
-    insights,
-    recommendations,
+    insights: [...insights, ...goalAnalysis.insights],
+    recommendations: [
+      ...recommendations,
+      ...goalAnalysis.recommendations,
+    ],
   };
 }
 
@@ -27,4 +34,5 @@ export type {
   FinancialInsight,
   FinancialInsightType,
   FinancialRecommendation,
+  FinancialMetrics,
 } from "@/features/dashboard/ai/types";

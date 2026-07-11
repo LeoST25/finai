@@ -10,11 +10,14 @@ import { analyzeFinancialData } from "@/features/dashboard/ai/financial-analyzer
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
 
+import { useGoals } from "@/features/goals/hooks";
+
 import {
   DashboardActionsWidget,
   DashboardAiWidget,
   DashboardKpisWidget,
   DashboardTransactionsWidget,
+  DashboardGoalsWidget,
 } from "@/features/dashboard/widgets";
 
 const DashboardChartsWidget = lazy(() =>
@@ -33,9 +36,10 @@ function DashboardChartsLoader() {
 
 export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
+  const { goals, alerts } = useGoals();
 
   const summary = getDashboardSummary(data);
-  const financialAnalysis = analyzeFinancialData(data);
+  const financialAnalysis = analyzeFinancialData(data, goals);
 
   if (isLoading) {
     return (
@@ -67,6 +71,8 @@ export function Dashboard() {
         <DashboardAiWidget analysis={financialAnalysis} />
 
         <DashboardActionsWidget />
+
+        <DashboardGoalsWidget goals={goals} alerts={alerts} isLoading={isLoading} />
 
         <DashboardTransactionsWidget expenses={data} />
 

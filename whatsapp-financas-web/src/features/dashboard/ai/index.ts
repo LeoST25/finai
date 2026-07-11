@@ -1,0 +1,1 @@
+export { analyzeFinancialGoals } from "./goal-analyzer";
