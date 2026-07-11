@@ -1,48 +1,165 @@
+import { useEffect } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import type {
+  Expense,
+  ExpenseType,
+} from "@/features/expenses/types/expense";
 import { useCreateExpense } from "@/features/expenses/hooks/use-create-expense";
+import { useUpdateExpense } from "@/features/expenses/hooks/use-update-expense";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+const expenseCategories = [
+  "Alimentação",
+  "Transporte",
+  "Moradia",
+  "Saúde",
+  "Educação",
+  "Lazer",
+  "Compras",
+  "Assinaturas",
+  "Outros",
+];
+
+const incomeCategories = [
+  "Salário",
+  "Freelance",
+  "Investimentos",
+  "Reembolso",
+  "Venda",
+  "Outros",
+];
+
+function normalizeCurrencyValue(value: string) {
+  const sanitizedValue = value.trim().replace(/\s/g, "");
+
+  if (sanitizedValue.includes(",")) {
+    return Number(sanitizedValue.replace(/\./g, "").replace(",", "."));
+  }
+
+  return Number(sanitizedValue);
+}
+
+function formatValueForInput(value?: number) {
+  if (value === undefined) return "";
+
+  return String(value).replace(".", ",");
+}
 
 const schema = z.object({
   description: z.string().min(2, "Informe uma descrição"),
-  category: z.string().min(2, "Informe uma categoria"),
-  value: z.number().positive("Informe um valor maior que zero"),
+  category: z.string().min(2, "Selecione uma categoria"),
+  value: z
+    .string()
+    .min(1, "Informe um valor")
+    .refine((value) => normalizeCurrencyValue(value) > 0, {
+      message: "Informe um valor maior que zero",
+    }),
   type: z.enum(["income", "expense"]),
 });
 
 type FormData = z.infer<typeof schema>;
 
-export function CreateExpenseForm() {
+type CreateExpenseFormProps = {
+  mode?: "create" | "edit";
+  defaultType?: ExpenseType;
+  expense?: Expense;
+  onSuccess?: () => void;
+};
+
+export function CreateExpenseForm({
+  mode = "create",
+  defaultType = "expense",
+  expense,
+  onSuccess,
+}: CreateExpenseFormProps) {
   const createExpense = useCreateExpense();
+  const updateExpense = useUpdateExpense();
+
+  const isEditMode = mode === "edit" && expense;
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      description: "",
-      category: "",
-      value: 0,
-      type: "expense",
+      description: expense?.description ?? "",
+      category: expense?.category ?? "",
+      value: formatValueForInput(expense?.value),
+      type: expense?.type ?? defaultType,
     },
   });
 
+  const selectedType = watch("type");
+  const selectedCategory = watch("category");
+
+  const baseCategories =
+    selectedType === "income" ? incomeCategories : expenseCategories;
+
+  const categories =
+    selectedCategory && !baseCategories.includes(selectedCategory)
+      ? [selectedCategory, ...baseCategories]
+      : baseCategories;
+
+  const isPending = createExpense.isPending || updateExpense.isPending;
+
+  useEffect(() => {
+    reset({
+      description: expense?.description ?? "",
+      category: expense?.category ?? "",
+      value: formatValueForInput(expense?.value),
+      type: expense?.type ?? defaultType,
+    });
+  }, [expense, defaultType, reset]);
+
+  function handleTypeChange(type: ExpenseType) {
+    setValue("type", type);
+
+    if (type !== selectedType) {
+      setValue("category", "");
+    }
+  }
+
   function onSubmit(data: FormData) {
-    createExpense.mutate(data, {
+    const payload = {
+      description: data.description,
+      category: data.category,
+      value: normalizeCurrencyValue(data.value),
+      type: data.type,
+    };
+
+    if (isEditMode) {
+      updateExpense.mutate(
+        {
+          id: expense.id,
+          ...payload,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Lançamento atualizado com sucesso.");
+            onSuccess?.();
+          },
+          onError: () => {
+            toast.error("Não foi possível atualizar o lançamento.");
+          },
+        },
+      );
+
+      return;
+    }
+
+    createExpense.mutate(payload, {
       onSuccess: () => {
         toast.success(
           data.type === "income"
@@ -53,9 +170,11 @@ export function CreateExpenseForm() {
         reset({
           description: "",
           category: "",
-          value: 0,
-          type: "expense",
+          value: "",
+          type: defaultType,
         });
+
+        onSuccess?.();
       },
       onError: () => {
         toast.error("Não foi possível cadastrar o lançamento.");
@@ -64,60 +183,95 @@ export function CreateExpenseForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Novo lançamento</CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid gap-4 lg:grid-cols-[1.2fr_1fr_0.8fr_0.8fr_auto]"
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => handleTypeChange("expense")}
+          className={cn(
+            "rounded-xl border p-4 text-left transition hover:bg-red-50",
+            selectedType === "expense" &&
+              "border-red-200 bg-red-50 text-red-700",
+          )}
         >
-          <div className="space-y-1">
-            <Input placeholder="Descrição" {...register("description")} />
-            {errors.description && (
-              <p className="text-xs text-red-500">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+          <p className="font-semibold">Despesa</p>
+          <p className="text-xs text-slate-500">Saída de dinheiro</p>
+        </button>
 
-          <div className="space-y-1">
-            <Input placeholder="Categoria" {...register("category")} />
-            {errors.category && (
-              <p className="text-xs text-red-500">
-                {errors.category.message}
-              </p>
-            )}
-          </div>
+        <button
+          type="button"
+          onClick={() => handleTypeChange("income")}
+          className={cn(
+            "rounded-xl border p-4 text-left transition hover:bg-emerald-50",
+            selectedType === "income" &&
+              "border-emerald-200 bg-emerald-50 text-emerald-700",
+          )}
+        >
+          <p className="font-semibold">Receita</p>
+          <p className="text-xs text-slate-500">Entrada de dinheiro</p>
+        </button>
+      </div>
 
-          <div className="space-y-1">
-            <Input
-              type="number"
-              step="0.01"
-              placeholder="Valor"
-              {...register("value", { valueAsNumber: true })}
-            />
-            {errors.value && (
-              <p className="text-xs text-red-500">{errors.value.message}</p>
-            )}
-          </div>
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Descrição</label>
+        <Input
+          placeholder="Ex: Mercado, salário, aluguel..."
+          {...register("description")}
+        />
+        {errors.description && (
+          <p className="text-xs text-red-500">
+            {errors.description.message}
+          </p>
+        )}
+      </div>
 
-          <select
-            className="h-10 rounded-md border bg-background px-3 text-sm"
-            {...register("type")}
-          >
-            <option value="expense">Despesa</option>
-            <option value="income">Receita</option>
-          </select>
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Categoria</label>
+        <select
+          className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+          {...register("category")}
+        >
+          <option value="">Selecione uma categoria</option>
 
-          <Button type="submit" disabled={createExpense.isPending}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            {createExpense.isPending ? "Salvando..." : "Cadastrar"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+
+        {errors.category && (
+          <p className="text-xs text-red-500">
+            {errors.category.message}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-1">
+        <label className="text-sm font-medium">Valor</label>
+        <Input
+          inputMode="decimal"
+          placeholder="0,00"
+          {...register("value")}
+        />
+        {errors.value && (
+          <p className="text-xs text-red-500">{errors.value.message}</p>
+        )}
+      </div>
+
+      <Button type="submit" disabled={isPending} className="w-full">
+        {isEditMode ? (
+          <Save className="mr-2 h-4 w-4" />
+        ) : (
+          <PlusCircle className="mr-2 h-4 w-4" />
+        )}
+
+        {isPending
+          ? "Salvando..."
+          : isEditMode
+            ? "Salvar alterações"
+            : "Cadastrar lançamento"}
+      </Button>
+    </form>
   );
 }
