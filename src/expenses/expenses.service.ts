@@ -7,19 +7,19 @@ export class ExpensesService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateExpenseDto) {
-    return this.prisma.prisma.expense.create({
+    return this.prisma.expense.create({
       data: dto,
     });
   }
 
   async findAll() {
-    return this.prisma.prisma.expense.findMany({
+    return this.prisma.expense.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async findOne(id: string) {
-    const expense = await this.prisma.prisma.expense.findUnique({
+    const expense = await this.prisma.expense.findUnique({
       where: { id },
     });
 
@@ -33,16 +33,22 @@ export class ExpensesService {
   async update(id: string, dto: Partial<CreateExpenseDto>) {
     await this.findOne(id);
 
-    return this.prisma.prisma.expense.update({
+    return this.prisma.expense.update({
       where: { id },
       data: dto,
     });
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const expense = await this.prisma.expense.findUnique({
+      where: { id },
+    });
 
-    return this.prisma.prisma.expense.delete({
+    if (!expense) {
+      throw new NotFoundException(`Lançamento ${id} não encontrado`);
+    }
+
+    return this.prisma.expense.delete({
       where: { id },
     });
   }

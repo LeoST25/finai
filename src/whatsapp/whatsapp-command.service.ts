@@ -1,125 +1,84 @@
 import { Injectable } from '@nestjs/common';
 import { ExpensesService } from '../expenses/expenses.service';
-
 @Injectable()
 export class WhatsappCommandService {
   constructor(private readonly expensesService: ExpensesService) {}
-
   async handle(command: string): Promise<string | null> {
     switch (command) {
       case 'hoje':
         return this.getTodaySummary();
-
       case 'mes':
       case 'mês':
         return this.getMonthSummary();
-
       case 'semana':
         return this.getWeekSummary();
-
       case 'saldo':
         return this.getBalanceSummary();
-
       default:
         return null;
     }
   }
-
-  private async getTodaySummary() {
+  private async getTodaySummary(): Promise<string> {
     const expenses = await this.expensesService.findAll();
     const today = new Date().toDateString();
-
     const todayExpenses = expenses.filter(
-      (expense: { createdAt: Date }) =>
+      (expense) =>
+        expense.type === 'expense' &&
         new Date(expense.createdAt).toDateString() === today,
     );
-
-    const total = todayExpenses.reduce(
-      (acc: number, expense: { value: number }) => acc + expense.value,
-      0,
-    );
-
-    return `📊 *Resumo de hoje*
-
-💰 Total gasto: R$ ${total.toFixed(2)}
-📌 Lançamentos: ${todayExpenses.length}`;
+    const total = this.calculateTotal(todayExpenses);
+    return `📊 *Resumo de hoje* 💰 Total gasto: ${this.formatCurrency(total)} 📌 Lançamentos: ${todayExpenses.length}`;
   }
-
-  private async getMonthSummary() {
+  private async getMonthSummary(): Promise<string> {
     const expenses = await this.expensesService.findAll();
     const now = new Date();
-
-    const monthExpenses = expenses.filter((expense: { createdAt: Date }) => {
+    const monthExpenses = expenses.filter((expense) => {
       const date = new Date(expense.createdAt);
-
       return (
+        expense.type === 'expense' &&
         date.getMonth() === now.getMonth() &&
         date.getFullYear() === now.getFullYear()
       );
     });
-
-    const total = monthExpenses.reduce(
-      (acc: number, expense: { value: number }) => acc + expense.value,
-      0,
-    );
-
-    return `📆 *Resumo do mês*
-
-💰 Total gasto: R$ ${total.toFixed(2)}
-📌 Lançamentos: ${monthExpenses.length}`;
+    const total = this.calculateTotal(monthExpenses);
+    return `📆 *Resumo do mês* 💰 Total gasto: ${this.formatCurrency(total)} 📌 Lançamentos: ${monthExpenses.length}`;
   }
-
-  private async getWeekSummary() {
+  private async getWeekSummary(): Promise<string> {
     const expenses = await this.expensesService.findAll();
     const now = new Date();
-
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
-
-    const weekExpenses = expenses.filter((expense: { createdAt: Date }) => {
+    const weekExpenses = expenses.filter((expense) => {
       const date = new Date(expense.createdAt);
-      return date >= startOfWeek && date <= now;
+      return expense.type === 'expense' && date >= startOfWeek && date <= now;
     });
-
-    const total = weekExpenses.reduce(
-      (acc: number, expense: { value: number }) => acc + expense.value,
-      0,
-    );
-
-    return `📅 *Resumo da semana*
-
-💰 Total gasto: R$ ${total.toFixed(2)}
-📌 Lançamentos: ${weekExpenses.length}`;
+    const total = this.calculateTotal(weekExpenses);
+    return `📅 *Resumo da semana* 💰 Total gasto: ${this.formatCurrency(total)} 📌 Lançamentos: ${weekExpenses.length}`;
   }
-
-  private async getBalanceSummary() {
+  private async getBalanceSummary(): Promise<string> {
     const expenses = await this.expensesService.findAll();
-
-    const incomes = expenses.filter(
-      (expense: { type: string }) => expense.type === 'income',
+    const totalIncome = this.calculateTotal(
+      expenses.filter((expense) => expense.type === 'income'),
     );
-
-    const outcomes = expenses.filter(
-      (expense: { type: string }) => expense.type === 'expense',
+    const totalExpense = this.calculateTotal(
+      expenses.filter((expense) => expense.type === 'expense'),
     );
-
-    const totalIncome = incomes.reduce(
-      (acc: number, expense: { value: number }) => acc + expense.value,
-      0,
-    );
-
-    const totalExpense = outcomes.reduce(
-      (acc: number, expense: { value: number }) => acc + expense.value,
-      0,
-    );
-
     const balance = totalIncome - totalExpense;
-
-    return `💼 *Saldo geral*
-
-🟢 Receitas: R$ ${totalIncome.toFixed(2)}
-🔴 Gastos: R$ ${totalExpense.toFixed(2)}
-💰 Saldo: R$ ${balance.toFixed(2)}`;
+    return `💼 *Saldo geral* 🟢 Receitas: ${this.formatCurrency(totalIncome)} 🔴 Gastos: ${this.formatCurrency(totalExpense)} 💰 Saldo: ${this.formatCurrency(balance)}`;
+  }
+  private calculateTotal(
+    expenses: Awaited<ReturnType<ExpensesService['findAll']>>,
+  ): number {
+    return expenses.reduce(
+      (total, expense) => total + Number(expense.value),
+      0,
+    );
+  }
+  private formatCurrency(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
   }
 }

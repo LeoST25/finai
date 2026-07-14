@@ -6,9 +6,7 @@ export class DailyAiSummary {
   }) {
     const { total, categories, count } = params;
 
-    const sorted = Object.entries(categories).sort(
-      (a, b) => b[1] - a[1],
-    );
+    const sorted = Object.entries(categories).sort((a, b) => b[1] - a[1]);
 
     const topCategory = sorted[0];
 

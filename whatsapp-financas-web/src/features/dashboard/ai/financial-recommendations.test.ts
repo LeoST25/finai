@@ -16,6 +16,8 @@ describe('generateFinancialRecommendations', () => {
       currentMonthTotal: 3200,
       previousMonthTotal: 2500,
       projectedExpenses: 3800,
+      recentExpenseTotal: 180,
+      recentExpenseCount: 3,
       topCategory: {
         name: 'Alimentação',
         total: 900,
@@ -38,6 +40,8 @@ describe('generateFinancialRecommendations', () => {
       currentMonthTotal: 3200,
       previousMonthTotal: 2500,
       projectedExpenses: 3800,
+      recentExpenseTotal: 180,
+      recentExpenseCount: 3,
       topCategory: {
         name: 'Alimentação',
         total: 900,

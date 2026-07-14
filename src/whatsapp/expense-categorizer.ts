@@ -18,17 +18,29 @@ export class ExpenseCategorizer {
     }
 
     // 🛒 mercado
-    if (t.includes('mercado') || t.includes('supermercado') || t.includes('atacadao')) {
+    if (
+      t.includes('mercado') ||
+      t.includes('supermercado') ||
+      t.includes('atacadao')
+    ) {
       return 'mercado';
     }
 
     // 💰 receita
-    if (t.includes('salario') || t.includes('freelance') || t.includes('pagamento')) {
+    if (
+      t.includes('salario') ||
+      t.includes('freelance') ||
+      t.includes('pagamento')
+    ) {
       return 'receita';
     }
 
     // 🎮 lazer
-    if (t.includes('netflix') || t.includes('spotify') || t.includes('cinema')) {
+    if (
+      t.includes('netflix') ||
+      t.includes('spotify') ||
+      t.includes('cinema')
+    ) {
       return 'lazer';
     }
 

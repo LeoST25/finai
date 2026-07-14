@@ -11,7 +11,27 @@ model Expense {
   id          String   @id @default(cuid())
   description String
   category    String
-  value       Float
+  value       Decimal
   type        String
   createdAt   DateTime @default(now())
+}
+
+model FinancialGoal {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  category      String
+  type          GoalType
+  targetAmount  Decimal
+  currentAmount Decimal  @default(0)
+  deadline      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("financial_goals")
+}
+
+enum GoalType {
+  SAVINGS
+  EXPENSE_LIMIT
 }

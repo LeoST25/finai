@@ -1,13 +1,9 @@
-import { ExpenseType } from '../expenses/dto/create-expense.dto';
 import { ExpenseCategorizer } from './expense-categorizer';
 import { ExpenseTypeDetector } from './expense-type-detector';
 
 export class ExpenseMessageParser {
   static parse(text: string) {
-    const normalized = text
-      .toLowerCase()
-      .replace(',', '.')
-      .trim();
+    const normalized = text.toLowerCase().replace(',', '.').trim();
 
     const valueMatch = normalized.match(/\d+(\.\d{1,2})?/);
 
@@ -37,7 +33,7 @@ export class ExpenseMessageParser {
       description,
       category,
       value,
-      type: type as ExpenseType,
+      type: type,
     };
   }
 }

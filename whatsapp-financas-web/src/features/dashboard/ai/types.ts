@@ -8,6 +8,8 @@ export type FinancialMetrics = {
   currentMonthTotal: number;
   previousMonthTotal: number;
   projectedExpenses: number;
+  recentExpenseTotal: number;
+  recentExpenseCount: number;
   topCategory?: {
     name: string;
     total: number;

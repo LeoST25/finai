@@ -15,7 +15,7 @@ function normalizeType(type: unknown): string {
 function getExpenseDate(expense: Expense): Date {
   const expenseWithLegacyDate = expense as Expense & {
     date?: string | Date;
-  }
+  };
 
   return new Date(
     expense.createdAt ?? expenseWithLegacyDate.date ?? new Date(),
@@ -40,6 +40,13 @@ function isPreviousMonth(date: Date, referenceDate: Date): boolean {
     date.getMonth() === previousMonth.getMonth() &&
     date.getFullYear() === previousMonth.getFullYear()
   );
+}
+
+function isRecentExpense(date: Date, referenceDate: Date): boolean {
+  const recentWindowStart = new Date(referenceDate);
+  recentWindowStart.setDate(recentWindowStart.getDate() - 7);
+
+  return date >= recentWindowStart && date <= referenceDate;
 }
 
 export function calculateFinancialMetrics(
@@ -92,6 +99,40 @@ export function calculateFinancialMetrics(
       ? (currentMonthTotal / currentDay) * daysInCurrentMonth
       : currentMonthTotal;
 
+  const recentExpenses = expenses.filter((expense) => {
+    const date = getExpenseDate(expense);
+
+    return (
+      normalizeType(expense.type) === 'expense' && isRecentExpense(date, now)
+    );
+  });
+
+  const recentExpenseTotal = recentExpenses.reduce(
+    (total, expense) => total + normalizeValue(expense.value),
+    0,
+  );
+
+  const recentExpenseCount = recentExpenses.length;
+
+  const categoryTotals = expenses.reduce<Map<string, number>>(
+    (acc, expense) => {
+      if (normalizeType(expense.type) !== 'expense') {
+        return acc;
+      }
+
+      const category = String(expense.category || 'Outros').trim() || 'Outros';
+      const value = normalizeValue(expense.value);
+      acc.set(category, (acc.get(category) ?? 0) + value);
+
+      return acc;
+    },
+    new Map<string, number>(),
+  );
+
+  const topCategory = [...categoryTotals.entries()].sort(
+    (left, right) => right[1] - left[1],
+  )[0];
+
   return {
     totalIncome,
     totalExpenses,
@@ -100,5 +141,13 @@ export function calculateFinancialMetrics(
     currentMonthTotal,
     previousMonthTotal,
     projectedExpenses,
+    recentExpenseTotal,
+    recentExpenseCount,
+    topCategory: topCategory
+      ? {
+          name: topCategory[0],
+          total: topCategory[1],
+        }
+      : undefined,
   };
 }
