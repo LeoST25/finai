@@ -77,7 +77,7 @@ function createSavingsAlert(
 export function generateGoalAlert(
   goal: FinancialGoalWithProgress,
 ): GoalAlert | null {
-  if (goal.type === "category-limit") {
+  if (goal.type === "expense-limit") {
     return createCategoryLimitAlert(goal);
   }
 

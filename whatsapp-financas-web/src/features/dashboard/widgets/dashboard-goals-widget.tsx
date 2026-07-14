@@ -7,6 +7,7 @@ import {
 } from "@/features/goals/components";
 import type { FinancialGoalWithProgress } from "@/features/goals/hooks";
 import type { GoalAlert } from "@/features/goals/types";
+import { CreateGoalDialog } from '@/features/goals/components';
 
 type DashboardGoalsWidgetProps = {
   goals: FinancialGoalWithProgress[];
@@ -69,14 +70,14 @@ function DashboardGoalsEmptyState() {
           categoria e receber recomendações personalizadas do FinAI.
         </p>
 
-        <Button className="mt-5" type="button" disabled>
-          <Plus className="size-4" />
-          Criar primeira meta
-        </Button>
-
-        <p className="mt-2 text-xs text-slate-400">
-          O cadastro de metas será disponibilizado em uma próxima etapa.
-        </p>
+        <CreateGoalDialog
+          trigger={
+            <Button className="mt-5">
+              <Plus className="size-4" />
+              Criar primeira meta
+            </Button>
+          }
+        />
       </div>
     </section>
   );
@@ -113,10 +114,7 @@ export function DashboardGoalsWidget({
   );
 
   return (
-    <section
-      className="space-y-5"
-      aria-labelledby="dashboard-goals-title"
-    >
+    <section className="space-y-5" aria-labelledby="dashboard-goals-title">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -128,7 +126,7 @@ export function DashboardGoalsWidget({
             </h2>
 
             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-              {goals.length} {goals.length === 1 ? "meta" : "metas"}
+              {goals.length} {goals.length === 1 ? 'meta' : 'metas'}
             </span>
           </div>
 
@@ -137,15 +135,14 @@ export function DashboardGoalsWidget({
           </p>
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled
-          className="w-full sm:w-auto"
-        >
-          Ver todas
-        </Button>
+        <CreateGoalDialog
+          trigger={
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4" />
+              Nova meta
+            </Button>
+          }
+        />
       </header>
 
       {visibleAlerts.length > 0 && (
@@ -180,8 +177,11 @@ export function DashboardGoalsWidget({
 
           {hiddenAlertsCount > 0 && (
             <p className="text-xs font-medium text-amber-800">
-              Mais {hiddenAlertsCount}{" "}
-              {hiddenAlertsCount === 1 ? "alerta disponível" : "alertas disponíveis"}.
+              Mais {hiddenAlertsCount}{' '}
+              {hiddenAlertsCount === 1
+                ? 'alerta disponível'
+                : 'alertas disponíveis'}
+              .
             </p>
           )}
         </div>
@@ -195,9 +195,9 @@ export function DashboardGoalsWidget({
 
       {hiddenGoalsCount > 0 && (
         <p className="text-center text-sm text-slate-500">
-          Mais {hiddenGoalsCount}{" "}
-          {hiddenGoalsCount === 1 ? "meta não exibida" : "metas não exibidas"} no
-          resumo do dashboard.
+          Mais {hiddenGoalsCount}{' '}
+          {hiddenGoalsCount === 1 ? 'meta não exibida' : 'metas não exibidas'}{' '}
+          no resumo do dashboard.
         </p>
       )}
     </section>

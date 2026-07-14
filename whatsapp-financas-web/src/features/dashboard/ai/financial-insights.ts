@@ -39,7 +39,7 @@ export function generateFinancialInsights(
     });
   }
 
-  if (metrics.income > 0 && metrics.savingsRate < 10 && metrics.balance > 0) {
+  if (metrics.totalIncome > 0 && metrics.savingsRate < 10 && metrics.balance > 0) {
     insights.push({
       type: "warning",
       title: "Economia baixa",
@@ -48,7 +48,7 @@ export function generateFinancialInsights(
     });
   }
 
-  if (metrics.totalExpenses > metrics.income && metrics.income > 0) {
+  if (metrics.totalExpenses > metrics.totalIncome && metrics.totalIncome > 0) {
     insights.push({
       type: "danger",
       title: "Despesas acima da renda",
@@ -97,7 +97,7 @@ export function generateFinancialInsights(
   if (metrics.projectedExpenses > 0) {
     insights.push({
       type:
-        metrics.projectedExpenses > metrics.income && metrics.income > 0
+        metrics.projectedExpenses > metrics.totalIncome && metrics.totalIncome > 0
           ? "warning"
           : "info",
       title: "Projeção do mês",

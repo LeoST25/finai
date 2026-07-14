@@ -1,11 +1,11 @@
 import { api } from "./api";
-import type { Expense, ExpenseType } from "@/features/expenses/types/expense";
+import type { Expense } from "@/features/expenses/types/expense";
 
 export type CreateExpenseInput = {
   description: string;
   category: string;
   value: number;
-  type: ExpenseType;
+  type: 'income' | 'expense';
 };
 
 export type UpdateExpenseInput = {
@@ -13,12 +13,27 @@ export type UpdateExpenseInput = {
   description: string;
   category: string;
   value: number;
-  type: ExpenseType;
+  type: 'income' | 'expense';
 };
 
+type ExpenseApiResponse = Omit<Expense, 'value'> & {
+  value: string | number;
+};
+
+function normalizeExpense(expense: ExpenseApiResponse): Expense {
+  const numericValue = Number(expense.value);
+
+  return {
+    ...expense,
+    value: Number.isFinite(numericValue) ? numericValue : 0,
+    type: expense.type.toLowerCase() as 'income' | 'expense',
+  };
+}
+
 export async function getExpenses(): Promise<Expense[]> {
-  const response = await api.get<Expense[]>("/expenses");
-  return response.data;
+  const response = await api.get<ExpenseApiResponse[]>("/expenses");
+
+  return response.data.map(normalizeExpense);
 }
 
 export async function createExpense(data: CreateExpenseInput): Promise<Expense> {
@@ -33,7 +48,6 @@ export async function updateExpense(data: UpdateExpenseInput): Promise<Expense> 
   return response.data;
 }
 
-export async function deleteExpense(id: string): Promise<Expense> {
-  const response = await api.delete<Expense>(`/expenses/${id}`);
-  return response.data;
+export async function deleteExpense(id: string): Promise<void> {
+  await api.delete(`/expenses/${id}`);
 }

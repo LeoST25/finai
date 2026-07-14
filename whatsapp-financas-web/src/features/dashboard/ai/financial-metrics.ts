@@ -1,37 +1,40 @@
-import type { Expense } from "@/features/expenses/types/expense";
-import type { FinancialMetrics } from "@/features/dashboard/ai/types";
+import type { Expense } from '@/features/expenses/types/expense';
+import type { FinancialMetrics } from './types';
 
-function getAmount(expense: Expense) {
-  return Number(expense.value ?? 0);
+function normalizeValue(value: unknown): number {
+  const numericValue =
+    typeof value === 'string' ? Number(value.replace(',', '.')) : Number(value);
+
+  return Number.isFinite(numericValue) ? numericValue : 0;
 }
 
-function isIncome(expense: Expense) {
-  return expense.type === "income";
+function normalizeType(type: unknown): string {
+  return String(type).trim().toLowerCase();
 }
 
-function isExpense(expense: Expense) {
-  return expense.type === "expense";
-}
-
-function getExpenseDate(expense: Expense) {
-  const record = expense as Expense & {
+function getExpenseDate(expense: Expense): Date {
+  const expenseWithLegacyDate = expense as Expense & {
     date?: string | Date;
-    createdAt?: string | Date;
-  };
+  }
 
-  return record.date ?? record.createdAt ?? new Date();
-}
-
-function isSameMonth(date: Date, reference: Date) {
-  return (
-    date.getMonth() === reference.getMonth() &&
-    date.getFullYear() === reference.getFullYear()
+  return new Date(
+    expense.createdAt ?? expenseWithLegacyDate.date ?? new Date(),
   );
 }
 
-function isPreviousMonth(date: Date, reference: Date) {
-  const previousMonth = new Date(reference);
-  previousMonth.setMonth(previousMonth.getMonth() - 1);
+function isSameMonth(date: Date, referenceDate: Date): boolean {
+  return (
+    date.getMonth() === referenceDate.getMonth() &&
+    date.getFullYear() === referenceDate.getFullYear()
+  );
+}
+
+function isPreviousMonth(date: Date, referenceDate: Date): boolean {
+  const previousMonth = new Date(
+    referenceDate.getFullYear(),
+    referenceDate.getMonth() - 1,
+    1,
+  );
 
   return (
     date.getMonth() === previousMonth.getMonth() &&
@@ -44,71 +47,58 @@ export function calculateFinancialMetrics(
 ): FinancialMetrics {
   const now = new Date();
 
-  const income = expenses
-    .filter(isIncome)
-    .reduce((total, expense) => total + getAmount(expense), 0);
+  const totalIncome = expenses
+    .filter((expense) => normalizeType(expense.type) === 'income')
+    .reduce((total, expense) => total + normalizeValue(expense.value), 0);
 
   const totalExpenses = expenses
-    .filter(isExpense)
-    .reduce((total, expense) => total + getAmount(expense), 0);
+    .filter((expense) => normalizeType(expense.type) === 'expense')
+    .reduce((total, expense) => total + normalizeValue(expense.value), 0);
 
-  const balance = income - totalExpenses;
-  const savingsRate = income > 0 ? (balance / income) * 100 : 0;
+  const currentMonthTotal = expenses
+    .filter((expense) => {
+      const date = getExpenseDate(expense);
 
-  const currentMonthExpenses = expenses.filter((expense) =>
-    isSameMonth(new Date(getExpenseDate(expense)), now),
-  );
+      return (
+        normalizeType(expense.type) === 'expense' && isSameMonth(date, now)
+      );
+    })
+    .reduce((total, expense) => total + normalizeValue(expense.value), 0);
 
-  const previousMonthExpenses = expenses.filter((expense) =>
-    isPreviousMonth(new Date(getExpenseDate(expense)), now),
-  );
+  const previousMonthTotal = expenses
+    .filter((expense) => {
+      const date = getExpenseDate(expense);
 
-  const currentMonthTotal = currentMonthExpenses
-    .filter(isExpense)
-    .reduce((total, expense) => total + getAmount(expense), 0);
+      return (
+        normalizeType(expense.type) === 'expense' && isPreviousMonth(date, now)
+      );
+    })
+    .reduce((total, expense) => total + normalizeValue(expense.value), 0);
 
-  const previousMonthTotal = previousMonthExpenses
-    .filter(isExpense)
-    .reduce((total, expense) => total + getAmount(expense), 0);
+  const balance = totalIncome - totalExpenses;
 
-  const expensesByCategory = expenses.filter(isExpense).reduce(
-    (acc, expense) => {
-      const category = expense.category || "Sem categoria";
-      acc[category] = (acc[category] ?? 0) + getAmount(expense);
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const savingsRate = totalIncome > 0 ? (balance / totalIncome) * 100 : 0;
 
-  const topCategoryEntry = Object.entries(expensesByCategory).sort(
-    (a, b) => b[1] - a[1],
-  )[0];
+  const currentDay = now.getDate();
 
-  const today = now.getDate();
-  const daysInMonth = new Date(
+  const daysInCurrentMonth = new Date(
     now.getFullYear(),
     now.getMonth() + 1,
     0,
   ).getDate();
 
   const projectedExpenses =
-    today > 0 && currentMonthTotal > 0
-      ? (currentMonthTotal / today) * daysInMonth
-      : 0;
+    currentDay > 0
+      ? (currentMonthTotal / currentDay) * daysInCurrentMonth
+      : currentMonthTotal;
 
   return {
-    income,
+    totalIncome,
     totalExpenses,
     balance,
     savingsRate,
     currentMonthTotal,
     previousMonthTotal,
     projectedExpenses,
-    topCategory: topCategoryEntry
-      ? {
-          name: topCategoryEntry[0],
-          total: topCategoryEntry[1],
-        }
-      : undefined,
   };
 }

@@ -8,9 +8,12 @@ import type { FinancialAnalysis } from "@/features/dashboard/ai/types";
 import type { FinancialGoalWithProgress } from "@/features/goals/hooks";
 import { analyzeFinancialGoals } from "./goal-analyzer";
 
-export function analyzeFinancialData(expenses: Expense[], goals: FinancialGoalWithProgress[] = [],): FinancialAnalysis {
-  const goalAnalysis = analyzeFinancialGoals(goals);
+export function analyzeFinancialData(
+  expenses: Expense[],
+  goals: FinancialGoalWithProgress[] = [],
+): FinancialAnalysis {
   const metrics = calculateFinancialMetrics(expenses);
+  const goalAnalysis = analyzeFinancialGoals(goals, metrics);
   const score = calculateFinancialScore(metrics);
   const insights = generateFinancialInsights(metrics);
   const recommendations = generateFinancialRecommendations(metrics);
@@ -18,7 +21,7 @@ export function analyzeFinancialData(expenses: Expense[], goals: FinancialGoalWi
   return {
     score,
     balance: metrics.balance,
-    income: metrics.income,
+    income: metrics.totalIncome,
     totalExpenses: metrics.totalExpenses,
     savingsRate: metrics.savingsRate,
     insights: [...insights, ...goalAnalysis.insights],

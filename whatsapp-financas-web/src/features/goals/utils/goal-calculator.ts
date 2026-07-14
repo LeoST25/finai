@@ -78,7 +78,7 @@ function getCategoryLimitStatus(percentage: number): GoalStatus {
 }
 
 function getGoalStatus(goal: FinancialGoal, percentage: number) {
-  if (goal.type === "category-limit") {
+  if (goal.type === "expense-limit") {
     return getCategoryLimitStatus(percentage);
   }
 

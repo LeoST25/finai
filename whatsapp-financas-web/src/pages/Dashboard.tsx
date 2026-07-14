@@ -28,7 +28,7 @@ const DashboardChartsWidget = lazy(() =>
 
 function DashboardChartsLoader() {
   return (
-    <div className="min-h-[320px] rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
+    <div className="min-h-80 rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
       Carregando gráficos...
     </div>
   );
@@ -36,12 +36,12 @@ function DashboardChartsLoader() {
 
 export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
-  const { goals, alerts } = useGoals();
+  const { goals, alerts, isLoading: goalsLoading, isError: goalsError } = useGoals();
 
   const summary = getDashboardSummary(data);
   const financialAnalysis = analyzeFinancialData(data, goals);
 
-  if (isLoading) {
+  if (isLoading || goalsLoading) {
     return (
       <AppLayout>
         <DashboardSkeleton />
@@ -49,7 +49,7 @@ export function Dashboard() {
     );
   }
 
-  if (error) {
+  if (error || goalsError) {
     return (
       <AppLayout>
         <ErrorState />
@@ -72,7 +72,7 @@ export function Dashboard() {
 
         <DashboardActionsWidget />
 
-        <DashboardGoalsWidget goals={goals} alerts={alerts} isLoading={isLoading} />
+        <DashboardGoalsWidget goals={goals} alerts={alerts} isLoading={goalsLoading} />
 
         <DashboardTransactionsWidget expenses={data} />
 

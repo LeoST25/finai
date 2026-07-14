@@ -1,0 +1,152 @@
+[1mdiff --git a/whatsapp-financas-web/src/features/dashboard/ai/financial-analyzer.ts b/whatsapp-financas-web/src/features/dashboard/ai/financial-analyzer.ts[m
+[1mindex 2f16a9a..d5f4ade 100644[m
+[1m--- a/whatsapp-financas-web/src/features/dashboard/ai/financial-analyzer.ts[m
+[1m+++ b/whatsapp-financas-web/src/features/dashboard/ai/financial-analyzer.ts[m
+[36m@@ -5,7 +5,11 @@[m [mimport { generateFinancialInsights } from "@/features/dashboard/ai/financial-ins[m
+ import { generateFinancialRecommendations } from "@/features/dashboard/ai/financial-recommendations";[m
+ import type { FinancialAnalysis } from "@/features/dashboard/ai/types";[m
+ [m
+[31m-export function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {[m
+[32m+[m[32mimport type { FinancialGoalWithProgress } from "@/features/goals/hooks";[m
+[32m+[m[32mimport { analyzeFinancialGoals } from "./goal-analyzer";[m
+[32m+[m
+[32m+[m[32mexport function analyzeFinancialData(expenses: Expense[], goals: FinancialGoalWithProgress[] = [],): FinancialAnalysis {[m
+[32m+[m[32m  const goalAnalysis = analyzeFinancialGoals(goals);[m
+   const metrics = calculateFinancialMetrics(expenses);[m
+   const score = calculateFinancialScore(metrics);[m
+   const insights = generateFinancialInsights(metrics);[m
+[36m@@ -15,10 +19,13 @@[m [mexport function analyzeFinancialData(expenses: Expense[]): FinancialAnalysis {[m
+     score,[m
+     balance: metrics.balance,[m
+     income: metrics.income,[m
+[31m-    expenses: metrics.totalExpenses,[m
+[32m+[m[32m    totalExpenses: metrics.totalExpenses,[m
+     savingsRate: metrics.savingsRate,[m
+[31m-    insights,[m
+[31m-    recommendations,[m
+[32m+[m[32m    insights: [...insights, ...goalAnalysis.insights],[m
+[32m+[m[32m    recommendations: [[m
+[32m+[m[32m      ...recommendations,[m
+[32m+[m[32m      ...goalAnalysis.recommendations,[m
+[32m+[m[32m    ],[m
+   };[m
+ }[m
+ [m
+[36m@@ -27,4 +34,5 @@[m [mexport type {[m
+   FinancialInsight,[m
+   FinancialInsightType,[m
+   FinancialRecommendation,[m
+[32m+[m[32m  FinancialMetrics,[m
+ } from "@/features/dashboard/ai/types";[m
+\ No newline at end of file[m
+[1mdiff --git a/whatsapp-financas-web/src/features/dashboard/ai/types.ts b/whatsapp-financas-web/src/features/dashboard/ai/types.ts[m
+[1mindex 48ca4b5..addbadf 100644[m
+[1m--- a/whatsapp-financas-web/src/features/dashboard/ai/types.ts[m
+[1m+++ b/whatsapp-financas-web/src/features/dashboard/ai/types.ts[m
+[36m@@ -1,16 +1,8 @@[m
+[31m-export type FinancialInsightType = "success" | "warning" | "danger" | "info";[m
+[31m-[m
+[31m-export type FinancialInsight = {[m
+[31m-  title: string;[m
+[31m-  description: string;[m
+[31m-  type: FinancialInsightType;[m
+[31m-};[m
+[31m-[m
+[31m-export type FinancialRecommendation = {[m
+[31m-  title: string;[m
+[31m-  description: string;[m
+[31m-  estimatedImpact?: string;[m
+[31m-};[m
+[32m+[m[32mexport type FinancialInsightType =[m
+[32m+[m[32m  | "success"[m
+[32m+[m[32m  | "warning"[m
+[32m+[m[32m  | "danger"[m
+[32m+[m[32m  | "info";[m
+ [m
+ export type FinancialMetrics = {[m
+   income: number;[m
+[36m@@ -26,11 +18,23 @@[m [mexport type FinancialMetrics = {[m
+   };[m
+ };[m
+ [m
+[32m+[m[32mexport type FinancialInsight = {[m
+[32m+[m[32m  title: string;[m
+[32m+[m[32m  description: string;[m
+[32m+[m[32m  type: FinancialInsightType;[m
+[32m+[m[32m};[m
+[32m+[m
+[32m+[m[32mexport type FinancialRecommendation = {[m
+[32m+[m[32m  title: string;[m
+[32m+[m[32m  description: string;[m
+[32m+[m[32m  estimatedImpact?: string;[m
+[32m+[m[32m};[m
+[32m+[m
+ export type FinancialAnalysis = {[m
+   score: number;[m
+   balance: number;[m
+   income: number;[m
+[31m-  expenses: number;[m
+[32m+[m[32m  totalExpenses: number;[m
+   savingsRate: number;[m
+   insights: FinancialInsight[];[m
+   recommendations: FinancialRecommendation[];[m
+[1mdiff --git a/whatsapp-financas-web/src/features/dashboard/widgets/index.ts b/whatsapp-financas-web/src/features/dashboard/widgets/index.ts[m
+[1mindex b8d9627..6af9f01 100644[m
+[1m--- a/whatsapp-financas-web/src/features/dashboard/widgets/index.ts[m
+[1m+++ b/whatsapp-financas-web/src/features/dashboard/widgets/index.ts[m
+[36m@@ -1,6 +1,7 @@[m
+[31m-export * from "./dashboard-actions-widget";[m
+[31m-export * from "./dashboard-charts-widget";[m
+[31m-export * from "./dashboard-insights-widget";[m
+[31m-export * from "./dashboard-kpis-widget";[m
+[31m-export * from "./dashboard-transactions-widget";[m
+[31m-export * from "./dashboard-ai-widget";[m
+\ No newline at end of file[m
+[32m+[m[32mexport { DashboardActionsWidget } from "./dashboard-actions-widget";[m
+[32m+[m[32mexport { DashboardChartsWidget } from "./dashboard-charts-widget";[m
+[32m+[m[32mexport { DashboardInsightsWidget } from "./dashboard-insights-widget";[m
+[32m+[m[32mexport { DashboardKpisWidget } from "./dashboard-kpis-widget";[m
+[32m+[m[32mexport { DashboardTransactionsWidget } from "./dashboard-transactions-widget";[m
+[32m+[m[32mexport { DashboardAiWidget } from "./dashboard-ai-widget";[m
+[32m+[m[32mexport { DashboardGoalsWidget } from "./dashboard-goals-widget";[m
+\ No newline at end of file[m
+[1mdiff --git a/whatsapp-financas-web/src/pages/Dashboard.tsx b/whatsapp-financas-web/src/pages/Dashboard.tsx[m
+[1mindex 2aa72df..ee75613 100644[m
+[1m--- a/whatsapp-financas-web/src/pages/Dashboard.tsx[m
+[1m+++ b/whatsapp-financas-web/src/pages/Dashboard.tsx[m
+[36m@@ -10,11 +10,14 @@[m [mimport { analyzeFinancialData } from "@/features/dashboard/ai/financial-analyzer[m
+ import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";[m
+ import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";[m
+ [m
+[32m+[m[32mimport { useGoals } from "@/features/goals/hooks";[m
+[32m+[m
+ import {[m
+   DashboardActionsWidget,[m
+   DashboardAiWidget,[m
+   DashboardKpisWidget,[m
+   DashboardTransactionsWidget,[m
+[32m+[m[32m  DashboardGoalsWidget,[m
+ } from "@/features/dashboard/widgets";[m
+ [m
+ const DashboardChartsWidget = lazy(() =>[m
+[36m@@ -33,9 +36,10 @@[m [mfunction DashboardChartsLoader() {[m
+ [m
+ export function Dashboard() {[m
+   const { data = [], isLoading, error } = useExpenses();[m
+[32m+[m[32m  const { goals, alerts } = useGoals();[m
+ [m
+   const summary = getDashboardSummary(data);[m
+[31m-  const financialAnalysis = analyzeFinancialData(data);[m
+[32m+[m[32m  const financialAnalysis = analyzeFinancialData(data, goals);[m
+ [m
+   if (isLoading) {[m
+     return ([m
+[36m@@ -68,6 +72,8 @@[m [mexport function Dashboard() {[m
+ [m
+         <DashboardActionsWidget />[m
+ [m
+[32m+[m[32m        <DashboardGoalsWidget goals={goals} alerts={alerts} isLoading={isLoading} />[m
+[32m+[m
+         <DashboardTransactionsWidget expenses={data} />[m
+ [m
+         <Suspense fallback={<DashboardChartsLoader />}>[m

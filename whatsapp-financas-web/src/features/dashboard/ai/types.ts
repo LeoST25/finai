@@ -1,11 +1,7 @@
-export type FinancialInsightType =
-  | "success"
-  | "warning"
-  | "danger"
-  | "info";
+export type FinancialInsightType = 'success' | 'warning' | 'danger' | 'info';
 
 export type FinancialMetrics = {
-  income: number;
+  totalIncome: number;
   totalExpenses: number;
   balance: number;
   savingsRate: number;
@@ -24,10 +20,13 @@ export type FinancialInsight = {
   type: FinancialInsightType;
 };
 
+export type RecommendationPriority = 'high' | 'medium' | 'low';
+
 export type FinancialRecommendation = {
   title: string;
   description: string;
   estimatedImpact?: string;
+  priority?: RecommendationPriority;
 };
 
 export type FinancialAnalysis = {

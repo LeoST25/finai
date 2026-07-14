@@ -1,22 +1,19 @@
-export type GoalType = "savings" | "category-limit";
+export type GoalType = 'savings' | 'expense-limit';
 
 export type GoalStatus =
-  | "not-started"
-  | "in-progress"
-  | "almost-complete"
-  | "completed"
-  | "exceeded";
+  'not-started' | 'in-progress' | 'almost-complete' | 'completed' | 'exceeded';
 
 export type FinancialGoal = {
   id: string;
   title: string;
+  description?: string;
+  category: string;
   type: GoalType;
   targetAmount: number;
   currentAmount: number;
-  category?: string;
   deadline?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type GoalProgress = {
@@ -28,12 +25,19 @@ export type GoalProgress = {
 
 export type CreateFinancialGoalInput = {
   title: string;
+  description?: string;
+  category: string;
   type: GoalType;
   targetAmount: number;
-  category?: string;
+  currentAmount?: number;
   deadline?: string;
 };
 
 export type UpdateFinancialGoalInput = Partial<
-  Omit<FinancialGoal, "id" | "createdAt" | "updatedAt">
+  Omit<FinancialGoal, 'id' | 'createdAt' | 'updatedAt'>
 >;
+
+export type UpdateFinancialGoalRequest = 
+UpdateFinancialGoalInput & {
+  id: string;
+}

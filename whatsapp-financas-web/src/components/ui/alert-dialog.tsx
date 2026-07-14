@@ -1,11 +1,11 @@
-import * as React from "react";
-import { createPortal } from "react-dom";
+import * as React from 'react';
+import { createPortal } from 'react-dom';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 type AlertDialogContextValue = {
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: (open: boolean) => void;
 };
 
 const AlertDialogContext = React.createContext<AlertDialogContextValue | null>(
@@ -16,14 +16,36 @@ function useAlertDialog() {
   const context = React.useContext(AlertDialogContext);
 
   if (!context) {
-    throw new Error("AlertDialog components must be used inside AlertDialog");
+    throw new Error('AlertDialog components must be used inside AlertDialog');
   }
 
   return context;
 }
 
-function AlertDialog({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = React.useState(false);
+function AlertDialog({
+  children,
+  open: externalOpen,
+  onOpenChange,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [internalOpen, setInternalOpen] = React.useState(false);
+
+  const open = externalOpen ?? internalOpen;
+
+  const setOpen = React.useCallback(
+    (nextOpen: boolean) => {
+      if (externalOpen !== undefined) {
+        onOpenChange?.(nextOpen);
+        return;
+      }
+
+      setInternalOpen(nextOpen);
+    },
+    [externalOpen, onOpenChange],
+  );
 
   return (
     <AlertDialogContext.Provider value={{ open, setOpen }}>
@@ -82,7 +104,7 @@ function AlertDialogContent({
 
       <div
         className={cn(
-          "relative z-50 w-full max-w-lg rounded-lg border bg-white p-6 shadow-lg",
+          'relative z-50 w-full max-w-lg rounded-lg border bg-white p-6 shadow-lg',
           className,
         )}
         {...props}
@@ -100,7 +122,10 @@ function AlertDialogHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col space-y-2 text-center sm:text-left", className)}
+      className={cn(
+        'flex flex-col space-y-2 text-center sm:text-left',
+        className,
+      )}
       {...props}
     />
   );
@@ -112,7 +137,10 @@ function AlertDialogFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      className={cn(
+        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+        className,
+      )}
       {...props}
     />
   );
@@ -122,18 +150,14 @@ function AlertDialogTitle({
   className,
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h2 className={cn("text-lg font-semibold", className)} {...props} />
-  );
+  return <h2 className={cn('text-lg font-semibold', className)} {...props} />;
 }
 
 function AlertDialogDescription({
   className,
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p className={cn("text-sm text-slate-500", className)} {...props} />
-  );
+  return <p className={cn('text-sm text-slate-500', className)} {...props} />;
 }
 
 function AlertDialogCancel({
@@ -147,7 +171,7 @@ function AlertDialogCancel({
     <button
       type="button"
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-100",
+        'inline-flex h-10 items-center justify-center rounded-md border bg-white px-4 py-2 text-sm font-medium hover:bg-slate-100',
         className,
       )}
       onClick={(event) => {
@@ -170,7 +194,7 @@ function AlertDialogAction({
     <button
       type="button"
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800",
+        'inline-flex h-10 items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800',
         className,
       )}
       onClick={(event) => {

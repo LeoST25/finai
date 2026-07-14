@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { deleteExpense } from '@/features/expenses/services/expenses.service';
+import { deleteGoal } from '@/features/goals/services';
 
-export function useDeleteExpense() {
+export function useDeleteGoal() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteExpense(id),
+    mutationFn: deleteGoal,
 
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['expenses'],
+        queryKey: ['goals'],
       });
     },
   });

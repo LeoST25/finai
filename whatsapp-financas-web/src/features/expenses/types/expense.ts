@@ -1,10 +1,10 @@
 export type ExpenseType = "income" | "expense";
 
-export type Expense = {
+export interface Expense {
   id: string;
   description: string;
   category: string;
   value: number;
-  type: ExpenseType;
+  type: 'income' | 'expense';
   createdAt: string;
 };

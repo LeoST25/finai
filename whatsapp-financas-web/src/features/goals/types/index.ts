@@ -5,6 +5,7 @@ export type {
   GoalStatus,
   GoalType,
   UpdateFinancialGoalInput,
+  UpdateFinancialGoalRequest,
 } from "@/features/goals/types/goal";
 
 export type { 

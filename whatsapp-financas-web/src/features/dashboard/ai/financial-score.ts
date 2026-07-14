@@ -6,8 +6,8 @@ export function calculateFinancialScore(metrics: FinancialMetrics) {
   if (metrics.balance > 0) score += 20;
   if (metrics.savingsRate >= 10) score += 10;
   if (metrics.savingsRate >= 20) score += 10;
-  if (metrics.totalExpenses > metrics.income) score -= 25;
-  if (metrics.income === 0 && metrics.totalExpenses > 0) score -= 20;
+  if (metrics.totalExpenses > metrics.totalIncome) score -= 25;
+  if (metrics.totalIncome === 0 && metrics.totalExpenses > 0) score -= 20;
 
   if (
     metrics.currentMonthTotal > metrics.previousMonthTotal &&
