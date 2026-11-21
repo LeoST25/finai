@@ -21,6 +21,11 @@ export class ReportsSchedulerService {
       return;
     }
 
+    if (!this.whatsappService.isEnabled) {
+      console.log('📴 WhatsApp desativado; resumo diário não enviado.');
+      return;
+    }
+
     const chatId = process.env.ADMIN_NUMBER + '@s.whatsapp.net';
 
     await this.whatsappService.sendMessage(chatId, summary);
