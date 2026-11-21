@@ -1,21 +1,46 @@
-Frontend
+# Arquitetura
 
-React
-│
-React Query
-│
-Feature Modules
-│
-Design System
-│
-Pages
+## Tecnologias
 
-Backend
+### Backend
 
-NestJS
+- NestJS
+- Prisma
+- SQLite
+- Swagger
+- Baileys
 
-↓
+### Frontend
 
+- React
+- Vite
+- TypeScript
+- React Query
+- React Hook Form
+- TailwindCSS
+- shadcn/ui
+
+---
+
+# Estrutura
+
+```
+apps
+
+api
+
+web
+
+shared
+
+docs
+```
+
+---
+
+## Backend
+
+```
 Controller
 
 ↓
@@ -28,4 +53,47 @@ Prisma
 
 ↓
 
-SQLite/Postgres
+Database
+```
+
+---
+
+## Frontend
+
+```
+Pages
+
+↓
+
+Features
+
+↓
+
+Hooks
+
+↓
+
+Services
+
+↓
+
+API
+```
+
+---
+
+## Feature First
+
+```
+features/
+
+dashboard/
+
+expenses/
+
+reports/
+
+ai/
+
+whatsapp/
+```

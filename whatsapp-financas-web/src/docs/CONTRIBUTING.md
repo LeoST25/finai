@@ -1,11 +1,79 @@
-Como instalar
+# Contribuindo
 
-Como rodar
+Obrigado por contribuir com o FinAI.
 
-Como contribuir
+## Requisitos
 
-Como abrir PR
+- Node 22+
+- npm
+- Git
 
-Padrão de commits
+---
 
-Branches
+## Instalação
+
+Backend
+
+```bash
+npm install
+```
+
+Frontend
+
+```bash
+cd whatsapp-financas-web
+
+npm install
+```
+
+---
+
+## Rodando
+
+Backend
+
+```bash
+npm run start:dev
+```
+
+Frontend
+
+```bash
+npm run dev
+```
+
+---
+
+## Git Flow
+
+main
+
+↓
+
+develop
+
+↓
+
+feature/...
+
+---
+
+## Conventional Commits
+
+feat:
+
+fix:
+
+docs:
+
+refactor:
+
+style:
+
+test:
+
+build:
+
+ci:
+
+chore:

@@ -1,7 +1,41 @@
-POST /expenses
+# API
 
-GET /expenses
+## Base URL
 
-PUT /expenses/:id
+```
+http://localhost:3000
+```
 
-DELETE /expenses/:id
+---
+
+## Endpoints
+
+### GET /expenses
+
+Lista despesas.
+
+---
+
+### POST /expenses
+
+Cria uma despesa.
+
+---
+
+### PUT /expenses/:id
+
+Atualiza uma despesa.
+
+---
+
+### DELETE /expenses/:id
+
+Remove uma despesa.
+
+---
+
+## Swagger
+
+```
+http://localhost:3000/api
+```

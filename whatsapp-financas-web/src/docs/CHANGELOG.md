@@ -1,16 +1,31 @@
 # Changelog
 
-## v0.4
+## 0.4.0
 
-- Dashboard Premium
+### Added
+
+- Dashboard Financeiro
 - KPIs
-- Charts
+- Gráficos
+- CRUD Manual
+- React Query
 
-## v0.5
+---
+
+## 0.5.0
+
+### Added
 
 - Design System
-- Expenses Module
+- Insights
+- Quick Actions
 
-## v0.6
+---
 
-- AI Insights
+## 0.6.0
+
+### Planned
+
+- Dashboard Widgets
+- Dark Mode
+- IA Financeira

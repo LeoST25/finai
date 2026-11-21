@@ -1,18 +1,35 @@
-import { AppLayout } from "@/components/layout/AppLayout";
-import { ErrorState } from "@/components/feedback/error-state";
-import { Section } from "@/shared/ui";
+import { Suspense, lazy } from "react";
+
+import { AppLayout } from "@/shared/layout/AppLayout";
+import { ErrorState } from "@/shared/feedback/error-state";
 
 import { useExpenses } from "@/features/expenses/hooks/use-expenses";
 import { getDashboardSummary } from "@/features/dashboard/dashboard-summary";
+import { analyzeFinancialData } from "@/features/dashboard/ai/financial-analyzer";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
-import { DashboardKpis } from "@/features/dashboard/components/dashboard-kpis";
-import { AiInsights } from "@/features/dashboard/components/ai-insights";
-import { QuickActions } from "@/features/dashboard/components/quick-actions";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
-import { LatestTransactions } from "@/features/dashboard/components/latest-transactions";
-import { CategoryChart } from "@/features/dashboard/components/category-chart";
-import { MonthlyChart } from "@/features/dashboard/components/monthly-chart";
+
+import {
+  DashboardActionsWidget,
+  DashboardAiWidget,
+  DashboardKpisWidget,
+  DashboardTransactionsWidget,
+} from "@/features/dashboard/widgets";
+
+const DashboardChartsWidget = lazy(() =>
+  import("@/features/dashboard/widgets").then((module) => ({
+    default: module.DashboardChartsWidget,
+  })),
+);
+
+function DashboardChartsLoader() {
+  return (
+    <div className="min-h-[320px] rounded-2xl border bg-white p-5 text-sm text-slate-500 sm:p-6">
+      Carregando gráficos...
+    </div>
+  );
+}
 
 import { CreateExpenseForm } from "@/features/expenses/components/create-expense-form";
 
@@ -20,6 +37,7 @@ export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
 
   const summary = getDashboardSummary(data);
+  const financialAnalysis = analyzeFinancialData(data);
 
   if (isLoading) {
     return (
@@ -39,28 +57,25 @@ export function Dashboard() {
 
   return (
     <AppLayout>
-      <Section>
+      <div className="mx-auto w-full max-w-7xl space-y-4 sm:space-y-6">
         <DashboardHeader
           user={{
             name: "Leonardo",
           }}
         />
 
-        <DashboardKpis summary={summary} />
+        <DashboardKpisWidget summary={summary} />
 
-        <AiInsights expenses={data} />
+        <DashboardAiWidget analysis={financialAnalysis} />
 
-        <QuickActions />
+        <DashboardActionsWidget />
 
-        <CreateExpenseForm />
+        <DashboardTransactionsWidget expenses={data} />
 
-        <LatestTransactions expenses={data} />
-
-        <div className="grid gap-4 lg:grid-cols-2">
-          <CategoryChart expenses={data} />
-          <MonthlyChart expenses={data} />
-        </div>
-      </Section>
+        <Suspense fallback={<DashboardChartsLoader />}>
+          <DashboardChartsWidget expenses={data} />
+        </Suspense>
+      </div>
     </AppLayout>
   );
 }
