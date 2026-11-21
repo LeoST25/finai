@@ -4,6 +4,28 @@ Este arquivo é a fonte de verdade para qualquer agente (humano ou IA) que alter
 este repositório. Ele é carregado automaticamente pelo OpenCode. Leia também
 `docs/AGENT_OFFICE.md` para o fluxo operacional do escritório de revisão.
 
+## 0. Regra inviolável: nunca commitar direto na `main`
+
+- **É proibido fazer `commit` diretamente na branch `main`**, com ou sem pedido
+  do usuário. Não existe exceção para documentação, configuração, CI ou correções
+  pequenas.
+- Antes de qualquer alteração, verifique a branch atual com `git branch --show-current`.
+  Se estiver em `main`, crie e mude para uma branch de trabalho antes de editar ou
+  commitar:
+  ```bash
+  git switch -c <tipo>/<descricao-curta>
+  ```
+- Todo trabalho deve chegar à `main` por Pull Request revisado, mesmo que o
+  repositório permita push direto.
+- Se o usuário pedir explicitamente para commitar e a branch atual for `main`,
+  não execute o commit: crie a branch, mova as alterações para ela e avise o
+  usuário.
+- `push` na `main`, force-push, merge local na `main` e alteração de histórico
+  também exigem branch e PR, salvo operação administrativa explicitamente
+  solicitada.
+- Use nomes de branch descritivos, por exemplo: `feat/`, `fix/`, `chore/`,
+  `docs/`, `refactor/`, `ci/`.
+
 ## 1. Contexto real da stack e da arquitetura
 
 O repositório é um monorepo simples com backend e frontend no mesmo diretório
@@ -189,7 +211,9 @@ Papéis definidos em `.opencode/agents/`:
 Fluxo obrigatório antes de `commit`, `push` ou abertura de PR:
 
 ```text
-implementar
+verificar branch atual (nunca main)
+  → criar branch de trabalho, se necessário
+  → implementar
   → auto-revisão contra este AGENTS.md
   → security-reviewer
   → build-reviewer / bash scripts/agent-review.sh --base <ref>
@@ -237,8 +261,9 @@ leitura.
 
 ## 5. O que exige atenção manual
 
+- **Nunca commitar direto na `main`.** Trabalhe sempre em branch e entregue via PR.
 - Commits, pushes, abertura/merge de PR e alteração de configurações do GitHub
-  exigem pedido explícito do usuário.
+  exigem pedido explícito do usuário, além da branch correta.
 - Revisar manualmente qualquer mudança em `.env.example`, CORS, autenticação,
   WhatsApp/Baileys, cron de relatórios, migrations e dependências.
 - Confirmar que `.env`, `auth/` e bancos SQLite não aparecem em `git status`.

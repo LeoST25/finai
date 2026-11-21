@@ -38,6 +38,9 @@ Fluxo obrigatório:
 
 Regras rígidas:
 
+- **Nunca faça commit, merge ou push diretamente na `main`**, mesmo com pedido
+  do usuário. Se estiver na `main`, crie uma branch (`feat/`, `fix/`, `chore/`,
+  `docs/`, `ci/` etc.) antes de qualquer edição ou commit, e entregue via PR.
 - Nunca faça `commit`, `push`, abertura de PR ou merge sem pedido explícito do
   usuário.
 - Antes de qualquer commit/push/PR autorizado, rode novamente o gate
