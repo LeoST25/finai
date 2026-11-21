@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Toaster } from "src/components/ui/sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 import App from "./App";
 import { QueryProvider } from "./app/providers/query-provider";
