@@ -16,6 +16,8 @@ sem passar por revisão de segurança e de build. As regras completas estão em
 ## Fluxo
 
 ```text
+0. Verificar a branch atual
+   └── se for main → criar branch de trabalho antes de qualquer edição/commit
 1. Implementar a mudança
 2. Auto-revisar contra AGENTS.md
 3. security-reviewer → relatório por severidade
@@ -24,6 +26,9 @@ sem passar por revisão de segurança e de build. As regras completas estão em
    ├── sim → corrigir e voltar ao passo 2
    └── não → pronto para commit/push/PR (se pedido explicitamente)
 ```
+
+> **Nunca commitar direto na `main`.** Todo trabalho deve ser feito em branch e
+> chegar à `main` por Pull Request revisado.
 
 ## Gate local
 
@@ -84,6 +89,7 @@ O workflow tem `permissions: contents: read` e não faz push, comentário ou mer
 
 ## Checklist de aprovação
 
+- [ ] Branch de trabalho criada; nenhum commit direto na `main`.
 - [ ] Nenhum segredo, token ou `.env` real no diff.
 - [ ] `auth/`, bancos SQLite e artefatos de build fora do commit.
 - [ ] Escopo da mudança respeitado, sem refatoração solta.
