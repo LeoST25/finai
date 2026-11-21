@@ -31,6 +31,8 @@ function DashboardChartsLoader() {
   );
 }
 
+import { CreateExpenseForm } from "@/features/expenses/components/create-expense-form";
+
 export function Dashboard() {
   const { data = [], isLoading, error } = useExpenses();
 
