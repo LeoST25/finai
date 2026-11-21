@@ -1,4 +1,4 @@
-import { BarChart3, LayoutDashboard, ReceiptText, Wallet } from "lucide-react";
+import { BarChart3, Bot, LayoutDashboard, ReceiptText, Wallet } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import { cn } from "@/lib/utils";
@@ -18,6 +18,11 @@ const navigation = [
     label: "Relatórios",
     href: "/reports",
     icon: BarChart3,
+  },
+  {
+    label: "Escritório",
+    href: "/office",
+    icon: Bot,
   },
 ];
 

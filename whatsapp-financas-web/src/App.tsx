@@ -21,6 +21,12 @@ const Reports = lazy(() =>
   })),
 );
 
+const AgentsOffice = lazy(() =>
+  import("@/pages/AgentsOffice/index").then((module) => ({
+    default: module.AgentsOffice,
+  })),
+);
+
 function App() {
   return (
     <BrowserRouter>
@@ -29,6 +35,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/office" element={<AgentsOffice />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

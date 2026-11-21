@@ -7,8 +7,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // ✅ Permite que o frontend React acesse a API
+  const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+    : [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
+      ];
+
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
@@ -38,4 +47,7 @@ async function bootstrap() {
   console.log('📘 Swagger em http://localhost:3000/api');
 }
 
-bootstrap();
+bootstrap().catch((error: unknown) => {
+  console.error('Falha ao iniciar a API:', error);
+  process.exitCode = 1;
+});

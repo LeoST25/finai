@@ -9,13 +9,6 @@ type DashboardHeaderProps = {
   };
 };
 
-type DashboardHeaderProps = {
-  user: {
-    name: string;
-    avatar?: string;
-  };
-};
-
 function getGreeting() {
   const hour = new Date().getHours();
 
